@@ -1,16 +1,5 @@
 //
-//  YouTubeFullScreenPlayer.swift
-//  MesopotamiaWays
-//
-//  Created by Bilal AYDIN on 3.12.2025.
-//
-
-//
-//  YouTubeFullScreenPlayer.swift (GÜNCELLENMİŞ)
-//  MesopotamiaWays
-//
-//
-//  YouTubeFullScreenPlayer.swift (TAM ÇALIŞAN)
+//  YouTubeFullScreenPlayer.swift (DÜZELTİLMİŞ)
 //  MesopotamiaWays
 //
 
@@ -23,8 +12,6 @@ struct YouTubeFullScreenPlayer: View {
     @Binding var isPresented: Bool
     
     @State private var playerState: YTPlayerState = .unknown
-    @State private var playerView: YTPlayerView?
-    @State private var showControls = false
     @State private var isPlayerReady = false
     
     var body: some View {
@@ -58,19 +45,12 @@ struct YouTubeFullScreenPlayer: View {
                 
                 Spacer()
                 
-                // YOUTUBE PLAYER
-                YouTubePlayerView(
-                    videoID: videoID,
-                    playerState: $playerState,
-                    onPlayerReady: {
-                        isPlayerReady = true
-                        print("🎬 Player hazır, video başlatılabilir")
-                    }
-                )
-                .frame(height: 300)
-                .cornerRadius(12)
-                .padding(.horizontal)
-                .shadow(radius: 10)
+                // YOUTUBE PLAYER - Basit versiyonu kullan
+                YouTubePlayerSimpleView(videoID: videoID)
+                    .frame(height: 300)
+                    .cornerRadius(12)
+                    .padding(.horizontal)
+                    .shadow(radius: 10)
                 
                 Spacer()
                 
@@ -157,14 +137,6 @@ struct YouTubeFullScreenPlayer: View {
             }
         }
         .statusBar(hidden: true)
-        .onAppear {
-            // 2 saniye sonra kontrolleri göster
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                withAnimation {
-                    showControls = true
-                }
-            }
-        }
     }
     
     // MARK: - Kontrol Fonksiyonları
@@ -191,81 +163,7 @@ struct YouTubeFullScreenPlayer: View {
     private func setPlaybackRate(_ rate: Float) {
         // Burada JavaScript ile playback rate ayarlanabilir
         print("🎚️ Playback rate: \(rate)x")
-        // Gerçek implementasyon için JavaScript gerekir
     }
 }
 
-// MARK: - Basit PlaceDetailView YouTube Bölümü
-struct YouTubeVideoSection: View {
-    let videoID: String
-    let placeName: String
-    @Binding var showYouTubePlayer: Bool
-    
-    var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text("Tanıtım Videosu")
-                    .font(.headline)
-                
-                Spacer()
-                
-                // YouTube İkonu
-                Image(systemName: "play.circle.fill")
-                    .foregroundColor(.red)
-            }
-            
-            // Video Thumbnail
-            Button(action: {
-                showYouTubePlayer = true
-            }) {
-                ZStack {
-                    // YouTube Thumbnail
-                    AsyncImage(url: URL(string: "https://img.youtube.com/vi/\(videoID)/mqdefault.jpg")) { image in
-                        image
-                            .resizable()
-                            .aspectRatio(16/9, contentMode: .fill)
-                            .frame(height: 180)
-                            .clipped()
-                            .cornerRadius(12)
-                    } placeholder: {
-                        Rectangle()
-                            .fill(
-                                LinearGradient(
-                                    gradient: Gradient(colors: [.gray.opacity(0.3), .gray.opacity(0.1)]),
-                                    startPoint: .top,
-                                    endPoint: .bottom
-                                )
-                            )
-                            .frame(height: 180)
-                            .cornerRadius(12)
-                            .overlay(
-                                ProgressView()
-                                    .progressViewStyle(CircularProgressViewStyle(tint: .red))
-                            )
-                    }
-                    
-                    // Oynat Butonu
-                    Image(systemName: "play.circle.fill")
-                        .font(.system(size: 50))
-                        .foregroundColor(.white)
-                        .shadow(radius: 10)
-                }
-                .frame(height: 180)
-            }
-            .buttonStyle(PlainButtonStyle())
-            
-            // Açıklama
-            VStack(alignment: .leading, spacing: 4) {
-                Text("YouTube Player ile izle")
-                    .font(.subheadline)
-                    .foregroundColor(.primary)
-                
-                Text("YouTube'un kendi kontrolleri ile tam ekran izleme")
-                    .font(.caption)
-                    .foregroundColor(.secondary)
-                    .lineLimit(2)
-            }
-        }
-        .padding(.vertical, 8)
-    }
-}
+

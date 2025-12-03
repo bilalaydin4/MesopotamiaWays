@@ -1,20 +1,21 @@
 //
-//  PlaceDetailView.swift (BASİTLEŞTİRİLMİŞ)
+//  PlaceDetailView.swift (SABİT BOYUTLU VIDEO)
+//  MesopotamiaWays
 //
 
 import SwiftUI
 import MapKit
+import YouTubeiOSPlayerHelper
 
 struct PlaceDetailView: View {
     let place: PlacesModel
     @State private var currentImageIndex = 0
     @State private var showFullScreenMap = false
-    @State private var showYouTubePlayer = false
     
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                // IMAGE SLIDER (Aynı)
+                // IMAGE SLIDER
                 ZStack(alignment: .bottom) {
                     TabView(selection: $currentImageIndex) {
                         ForEach(0..<place.imageName.count, id: \.self) { index in
@@ -61,14 +62,10 @@ struct PlaceDetailView: View {
                         .font(.body)
                         .lineSpacing(4)
                     
-                    // YOUTUBE VİDEO BÖLÜMÜ - BASİT
+                    // YOUTUBE VİDEO BÖLÜMÜ - SABİT BOYUT
                     if !place.videoUrl.isEmpty, let videoID = extractYouTubeID(from: place.videoUrl) {
-                        YouTubeVideoSection(
-                            videoID: videoID,
-                            placeName: place.name,
-                            showYouTubePlayer: $showYouTubePlayer
-                        )
-                        .padding(.top, 16)
+                        YouTubeFixedPlayer(videoID: videoID)
+                            .padding(.top, 16)
                     }
                     
                     // Harita önizleme
@@ -131,19 +128,9 @@ struct PlaceDetailView: View {
         .fullScreenCover(isPresented: $showFullScreenMap) {
             FullScreenMapView(place: place, isPresented: $showFullScreenMap)
         }
-        .fullScreenCover(isPresented: $showYouTubePlayer) {
-            if let videoID = extractYouTubeID(from: place.videoUrl) {
-                YouTubeFullScreenPlayer(
-                    videoID: videoID,
-                    placeName: place.name,
-                    isPresented: $showYouTubePlayer
-                )
-            }
-        }
     }
     
     private func extractYouTubeID(from url: String) -> String? {
-        // Basit regex ile YouTube ID çıkarma
         let patterns = [
             #"v=([a-zA-Z0-9_-]{11})"#,
             #"youtu\.be\/([a-zA-Z0-9_-]{11})"#,
@@ -168,5 +155,60 @@ struct PlaceDetailView: View {
         
         let options = [MKLaunchOptionsDirectionsModeKey: MKLaunchOptionsDirectionsModeDriving]
         mapItem.openInMaps(launchOptions: options)
+    }
+}
+
+// MARK: - Sabit Boyutlu YouTube Player
+struct YouTubeFixedPlayer: View {
+    let videoID: String
+    
+    var body: some View {
+        VStack(spacing: 0) {
+            // Video Başlığı
+            HStack {
+                HStack(spacing: 8) {
+                    Image(systemName: "play.circle.fill")
+                        .foregroundColor(.red)
+                    Text("Tanıtım Videosu")
+                        .font(.headline)
+                }
+                
+                Spacer()
+                
+                // YouTube'a Aç Butonu
+                if let url = URL(string: "https://www.youtube.com/watch?v=\(videoID)") {
+                    Link(destination: url) {
+                        Image(systemName: "arrow.up.right.square")
+                            .font(.subheadline)
+                            .foregroundColor(.red)
+                            .padding(6)
+                            .background(Color(.systemGray6))
+                            .clipShape(Circle())
+                    }
+                }
+            }
+            .padding(.horizontal, 12)
+            .padding(.vertical, 10)
+            .background(Color(.systemGray6))
+            .cornerRadius(12, corners: [.topLeft, .topRight])
+            
+            // YouTube Player - Sabit boyut
+            YouTubePlayerSimpleView(videoID: videoID)
+                .frame(height: 220) // Sabit yükseklik
+                .cornerRadius(0)
+            
+          
+        }
+        .background(Color.white)
+        .cornerRadius(12)
+        .shadow(color: .gray.opacity(0.2), radius: 4, x: 0, y: 2)
+    }
+}
+
+
+
+#Preview {
+    NavigationView {
+        PlaceDetailView(place: mardin)
     }
 }
