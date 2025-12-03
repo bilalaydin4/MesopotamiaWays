@@ -1,25 +1,21 @@
 //
-//  PlaceDetailView.swift
-//  MesopotamiaWays
+//  PlaceDetailView.swift (BASİTLEŞTİRİLMİŞ)
 //
-//  Created by Bilal AYDIN on 24.11.2025.
-//
-
 
 import SwiftUI
 import MapKit
 
 struct PlaceDetailView: View {
     let place: PlacesModel
-    @State private var showFullScreenMap = false
     @State private var currentImageIndex = 0
+    @State private var showFullScreenMap = false
+    @State private var showYouTubePlayer = false
     
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 16) {
-                // IMAGE SLIDER
+                // IMAGE SLIDER (Aynı)
                 ZStack(alignment: .bottom) {
-                    // ANA GÖRSELLER
                     TabView(selection: $currentImageIndex) {
                         ForEach(0..<place.imageName.count, id: \.self) { index in
                             Image(place.imageName[index])
@@ -32,9 +28,7 @@ struct PlaceDetailView: View {
                     }
                     .frame(height: 250)
                     .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-                    .edgesIgnoringSafeArea(.top)
                     
-                    // SLIDER INDICATOR
                     HStack(spacing: 6) {
                         ForEach(0..<place.imageName.count, id: \.self) { index in
                             Circle()
@@ -43,22 +37,6 @@ struct PlaceDetailView: View {
                         }
                     }
                     .padding(.bottom, 16)
-                    
-                    // RESİM SAYACI
-                    VStack {
-                        HStack {
-                            Spacer()
-                            Text("\(currentImageIndex + 1)/\(place.imageName.count)")
-                                .font(.caption)
-                                .fontWeight(.semibold)
-                                .foregroundColor(.white)
-                                .padding(6)
-                                .background(Color.black.opacity(0.6))
-                                .cornerRadius(8)
-                        }
-                        Spacer()
-                    }
-                    .padding()
                 }
                 .frame(height: 250)
                 
@@ -83,7 +61,17 @@ struct PlaceDetailView: View {
                         .font(.body)
                         .lineSpacing(4)
                     
-                    // Harita önizleme - TIKLANABİLİR
+                    // YOUTUBE VİDEO BÖLÜMÜ - BASİT
+                    if !place.videoUrl.isEmpty, let videoID = extractYouTubeID(from: place.videoUrl) {
+                        YouTubeVideoSection(
+                            videoID: videoID,
+                            placeName: place.name,
+                            showYouTubePlayer: $showYouTubePlayer
+                        )
+                        .padding(.top, 16)
+                    }
+                    
+                    // Harita önizleme
                     VStack(alignment: .leading) {
                         HStack {
                             Text("Konum")
@@ -97,7 +85,6 @@ struct PlaceDetailView: View {
                         }
                         .padding(.bottom, 8)
                         
-                        // Tıklanabilir harita
                         Button(action: {
                             showFullScreenMap = true
                         }) {
@@ -144,28 +131,42 @@ struct PlaceDetailView: View {
         .fullScreenCover(isPresented: $showFullScreenMap) {
             FullScreenMapView(place: place, isPresented: $showFullScreenMap)
         }
+        .fullScreenCover(isPresented: $showYouTubePlayer) {
+            if let videoID = extractYouTubeID(from: place.videoUrl) {
+                YouTubeFullScreenPlayer(
+                    videoID: videoID,
+                    placeName: place.name,
+                    isPresented: $showYouTubePlayer
+                )
+            }
+        }
     }
     
-    // HARİTA UYGULAMASINI AÇ ve NAVİGASYON BAŞLAT
+    private func extractYouTubeID(from url: String) -> String? {
+        // Basit regex ile YouTube ID çıkarma
+        let patterns = [
+            #"v=([a-zA-Z0-9_-]{11})"#,
+            #"youtu\.be\/([a-zA-Z0-9_-]{11})"#,
+            #"embed\/([a-zA-Z0-9_-]{11})"#
+        ]
+        
+        for pattern in patterns {
+            if let regex = try? NSRegularExpression(pattern: pattern),
+               let match = regex.firstMatch(in: url, range: NSRange(url.startIndex..., in: url)),
+               let range = Range(match.range(at: 1), in: url) {
+                return String(url[range])
+            }
+        }
+        return nil
+    }
+    
     private func openInMapsForNavigation() {
         let coordinate = place.locationCordinates
         let placemark = MKPlacemark(coordinate: coordinate)
         let mapItem = MKMapItem(placemark: placemark)
         mapItem.name = place.name
         
-        // Navigasyon modunda aç
         let options = [MKLaunchOptionsDirectionsModeKey: MKLaunchOptionsDirectionsModeDriving]
         mapItem.openInMaps(launchOptions: options)
     }
 }
-
-
-
-#Preview {
-    NavigationView {
-        PlaceDetailView(place: mardin)
-    }
-}
-
-
-
