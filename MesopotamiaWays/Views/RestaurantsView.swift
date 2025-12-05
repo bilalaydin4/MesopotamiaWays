@@ -32,7 +32,7 @@ struct RestaurantsView: View {
     }
     
     var body: some View {
-        NavigationView {
+        
             VStack(spacing: 0) {
                 // ARAMA ÇUBUĞU
                 VStack(spacing: 16) {
@@ -125,7 +125,6 @@ struct RestaurantsView: View {
                 RestaurantDetailView(restaurant: restaurant)
             }
         }
-    }
 }
 
 // MARK: - Restoran Kartı Bileşeni
@@ -568,10 +567,8 @@ struct CategoryTag: View {
 }
 
 // MARK: - ÖNİZLEME
-struct RestaurantsView_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationStack {
-            RestaurantsView()
-        }
+#Preview {
+    NavigationStack {
+        RestaurantsView()
     }
 }

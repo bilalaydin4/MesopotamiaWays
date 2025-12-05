@@ -1,10 +1,3 @@
-//
-//  ContentView.swift
-//  MesopotamiaWays
-//
-//  Created by Bilal AYDIN on 24.11.2025.
-//
-
 import SwiftUI
 import MapKit
 
@@ -15,7 +8,6 @@ struct ContentView: View {
     
     @State private var searchText = ""
     
-    // Filtrelenmiş yerler
     var filteredPlaces: [PlacesModel] {
         if searchText.isEmpty {
             return places
@@ -30,7 +22,7 @@ struct ContentView: View {
     
     var body: some View {
         TabView {
-            // TAB 1: KEŞFET
+            // TAB 1: KEŞFET (Ana Sayfa)
             NavigationView {
                 ScrollView {
                     VStack(spacing: 20) {
@@ -69,6 +61,40 @@ struct ContentView: View {
                                 .padding(.horizontal)
                             }
                         }
+                        
+                        // HIZLI ERİŞİM BUTONLARI - EKLENDİ
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("Hızlı Erişim")
+                                .font(.headline)
+                                .fontWeight(.semibold)
+                                .padding(.horizontal)
+                            
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                HStack(spacing: 15) {
+                                    NavigationLink(destination: HotelsView()) {
+                                        QuickAccessButton(icon: "building.2", title: "Oteller")
+                                    }
+                                    .buttonStyle(PlainButtonStyle())
+                                    
+                                    NavigationLink(destination: RestaurantsView()) {
+                                        QuickAccessButton(icon: "fork.knife", title: "Restoranlar")
+                                    }
+                                    .buttonStyle(PlainButtonStyle())
+                                    
+                                    NavigationLink(destination: ToursListView(tours: tours)) {
+                                        QuickAccessButton(icon: "flag.fill", title: "Turlar")
+                                    }
+                                    .buttonStyle(PlainButtonStyle())
+                                    
+                                    NavigationLink(destination: MapView(places: places, hotels: hotels, restaurants: restaurants)) {
+                                        QuickAccessButton(icon: "map.fill", title: "Harita")
+                                    }
+                                    .buttonStyle(PlainButtonStyle())
+                                }
+                                .padding(.horizontal)
+                            }
+                        }
+                        .padding(.top, 5)
                         
                         // YAKININIZDAKİ YERLER
                         VStack(alignment: .leading) {
@@ -115,12 +141,13 @@ struct ContentView: View {
                             }
                         }
                     }
+                    .padding(.vertical)
                 }
                 .navigationTitle("Mardin")
             }
             .tabItem {
-                Image(systemName: "binoculars")
-                Text("Keşfet")
+                Image(systemName: "house.fill")
+                Text("Ana Sayfa")
             }
             
             // TAB 2: HARİTA
@@ -130,34 +157,62 @@ struct ContentView: View {
                     .edgesIgnoringSafeArea(.bottom)
             }
             .tabItem {
-                Image(systemName: "map")
+                Image(systemName: "map.fill")
                 Text("Harita")
             }
             
-            // TAB 3: OTEL
+            // TAB 3: TURLAR
             NavigationView {
-                HotelsView()
-                    .navigationTitle("Oteller")
+                ToursListView(tours: tours)
+                    .navigationTitle("Turlar")
             }
             .tabItem {
-                Image(systemName: "building.2")
-                Text("Oteller")
+                Image(systemName: "flag.fill")
+                Text("Turlar")
             }
             
-            // TAB 4: RESTORANLAR
+            // TAB 4: PROFİL
             NavigationView {
-                RestaurantsView()
-                    .navigationTitle("Restoranlar")
+                ProfileView()
+                    .navigationTitle("Profil")
             }
             .tabItem {
-                Image(systemName: "fork.knife")
-                Text("Restoranlar")
+                Image(systemName: "person.fill")
+                Text("Profil")
             }
         }
         .accentColor(Color(red: 0.85, green: 0.48, blue: 0.27))
     }
 }
 
+// Hızlı Erişim Butonu Bileşeni
+struct QuickAccessButton: View {
+    let icon: String
+    let title: String
+    
+    var body: some View {
+        VStack(spacing: 8) {
+            ZStack {
+                Circle()
+                    .fill(Color(red: 0.85, green: 0.48, blue: 0.27))
+                    .frame(width: 60, height: 60)
+                
+                Image(systemName: icon)
+                    .font(.title2)
+                    .foregroundColor(.white)
+            }
+            
+            Text(title)
+                .font(.caption)
+                .fontWeight(.medium)
+                .foregroundColor(.primary)
+                .frame(width: 70)
+                .multilineTextAlignment(.center)
+        }
+    }
+}
+
+// Önizleme
 #Preview {
     ContentView()
 }
