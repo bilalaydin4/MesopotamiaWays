@@ -16,6 +16,7 @@ struct HotelsModel : Identifiable {
     var oneNightPriceForOnePerson : Double
     var oneNightPriceForTwoPeople : Double
     var coordinate : HotelCoordinates
+   // var phoneNumber : String = "+905432145678"
     
     var location : CLLocationCoordinate2D {
         CLLocationCoordinate2D(latitude: coordinate.latitude, longitude: coordinate.longitude)

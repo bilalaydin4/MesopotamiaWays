@@ -7,6 +7,7 @@
 
 import SwiftUI
 import MapKit
+import FirebaseAuth
 
 struct HotelsView: View {
     let hotels: [HotelsModel] = [buyukMardinOteli, yayGrand]
@@ -26,101 +27,98 @@ struct HotelsView: View {
     }
     
     var body: some View {
-        
-            VStack(spacing: 0) {
-                // ARAMA ÇUBUĞU
-                VStack(spacing: 16) {
-                    HStack {
-                        Image(systemName: "magnifyingglass")
-                            .foregroundColor(.secondary)
-                        
-                        TextField("Otel ara...", text: $searchText)
-                            .textFieldStyle(PlainTextFieldStyle())
-                        
-                        if !searchText.isEmpty {
-                            Button(action: {
-                                searchText = ""
-                            }) {
-                                Image(systemName: "xmark.circle.fill")
-                                    .foregroundColor(.secondary)
-                            }
-                        }
-                    }
-                    .padding(12)
-                    .background(Color(.systemGray6))
-                    .cornerRadius(12)
-                    //.padding(.horizontal)
-                    .padding()
+        VStack(spacing: 0) {
+            // ARAMA ÇUBUĞU
+            VStack(spacing: 16) {
+                HStack {
+                    Image(systemName: "magnifyingglass")
+                        .foregroundColor(.secondary)
                     
-                    // Arama sonuç sayısı
+                    TextField("Otel ara...", text: $searchText)
+                        .textFieldStyle(PlainTextFieldStyle())
+                    
                     if !searchText.isEmpty {
-                        HStack {
-                            Text("\(filteredHotels.count) otel bulundu")
-                                .font(.caption)
+                        Button(action: {
+                            searchText = ""
+                        }) {
+                            Image(systemName: "xmark.circle.fill")
                                 .foregroundColor(.secondary)
-                            Spacer()
                         }
-                        .padding(.horizontal)
                     }
                 }
-                .background(Color.white)
+                .padding(12)
+                .background(Color(.systemGray6))
+                .cornerRadius(12)
+                .padding()
                 
-                // OTEL LİSTESİ
-                ScrollView {
-                    VStack(alignment: .leading) {
-                        HStack {
-                            Text(searchText.isEmpty ? "Konaklama Yerleri" : "Arama Sonuçları")
-                                .font(.title2)
-                                .fontWeight(.semibold)
+                // Arama sonuç sayısı
+                if !searchText.isEmpty {
+                    HStack {
+                        Text("\(filteredHotels.count) otel bulundu")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                        Spacer()
+                    }
+                    .padding(.horizontal)
+                }
+            }
+            .background(Color.white)
+            
+            // OTEL LİSTESİ
+            ScrollView {
+                VStack(alignment: .leading) {
+                    HStack {
+                        Text(searchText.isEmpty ? "Konaklama Yerleri" : "Arama Sonuçları")
+                            .font(.title2)
+                            .fontWeight(.semibold)
+                        
+                        Spacer()
+                        
+                        Text("\(filteredHotels.count) otel")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    .padding(.horizontal)
+                    .padding(.top, 20)
+                    
+                    // OTEL KARTLARI
+                    if filteredHotels.isEmpty && !searchText.isEmpty {
+                        VStack(spacing: 16) {
+                            Image(systemName: "building.2")
+                                .font(.system(size: 50))
+                                .foregroundColor(.secondary)
                             
-                            Spacer()
+                            Text("'\(searchText)' için otel bulunamadı")
+                                .font(.headline)
+                                .foregroundColor(.secondary)
                             
-                            Text("\(filteredHotels.count) otel")
+                            Text("Farklı bir anahtar kelime deneyin")
                                 .font(.caption)
                                 .foregroundColor(.secondary)
                         }
-                        .padding(.horizontal)
-                        .padding(.top, 20)
-                        
-                        // OTEL KARTLARI
-                        if filteredHotels.isEmpty && !searchText.isEmpty {
-                            VStack(spacing: 16) {
-                                Image(systemName: "building.2")
-                                    .font(.system(size: 50))
-                                    .foregroundColor(.secondary)
-                                
-                                Text("'\(searchText)' için otel bulunamadı")
-                                    .font(.headline)
-                                    .foregroundColor(.secondary)
-                                
-                                Text("Farklı bir anahtar kelime deneyin")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
+                        .frame(height: 200)
+                        .padding()
+                    } else {
+                        LazyVStack(spacing: 16) {
+                            ForEach(filteredHotels) { hotel in
+                                HotelCard(hotel: hotel)
+                                    .onTapGesture {
+                                        selectedHotel = hotel
+                                        showHotelDetail = true
+                                    }
                             }
-                            .frame(height: 200)
-                            .padding()
-                        } else {
-                            LazyVStack(spacing: 16) {
-                                ForEach(filteredHotels) { hotel in
-                                    HotelCard(hotel: hotel)
-                                        .onTapGesture {
-                                            selectedHotel = hotel
-                                            showHotelDetail = true
-                                        }
-                                }
-                            }
-                            .padding(.horizontal)
-                            .padding(.top, 8)
                         }
+                        .padding(.horizontal)
+                        .padding(.top, 8)
                     }
                 }
-                .background(Color(.systemGroupedBackground))
             }
-            .navigationTitle("Oteller")
-            .sheet(item: $selectedHotel) { hotel in
-                HotelDetailView(hotel: hotel)
-            }
-        
+            .background(Color(.systemGroupedBackground))
+        }
+        .navigationTitle("Oteller")
+        .sheet(item: $selectedHotel) { hotel in
+            HotelDetailView(hotel: hotel)
+        }
     }
 }
 
@@ -232,6 +230,7 @@ struct HotelCard: View {
 struct HotelDetailView: View {
     let hotel: HotelsModel
     @State private var currentImageIndex = 0
+    @State private var showLoginView = false
     @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
@@ -325,14 +324,20 @@ struct HotelDetailView: View {
                         .background(Color.blue.opacity(0.1))
                         .cornerRadius(12)
                         
-                        // REZERVASYON BUTONU
+                        // REZERVASYON BUTONU - GÜNCELLENDİ
                         Button(action: {
-                            // Rezervasyon işlemi
-                            makeReservation()
+                            // Firebase Auth ile kullanıcı kontrolü
+                            if Auth.auth().currentUser != nil {
+                                // Kullanıcı giriş yapmışsa
+                                makeReservation()
+                            } else {
+                                // Kullanıcı giriş yapmamışsa
+                                showLoginView = true
+                            }
                         }) {
                             HStack {
                                 Image(systemName: "calendar.badge.plus")
-                                Text("Rezervasyon Yap")
+                                Text(Auth.auth().currentUser != nil ? "Rezervasyon Yap" : "Giriş Yaparak Rezervasyon Yap")
                                 Spacer()
                                 Image(systemName: "chevron.right")
                             }
@@ -340,7 +345,7 @@ struct HotelDetailView: View {
                             .foregroundColor(.white)
                             .padding()
                             .frame(maxWidth: .infinity)
-                            .background(Color.blue)
+                            .background(Auth.auth().currentUser != nil ? Color.blue : Color.orange)
                             .cornerRadius(12)
                         }
                         .padding(.top, 8)
@@ -390,11 +395,22 @@ struct HotelDetailView: View {
                 }
             }
         }
+        // LoginView'i popup pencere olarak aç
+        .sheet(isPresented: $showLoginView) {
+            LoginView(isPresented: $showLoginView)
+        }
     }
     
     private func makeReservation() {
+        guard let user = Auth.auth().currentUser else {
+            showLoginView = true
+            return
+        }
+        
+        // Burada rezervasyon işlemini gerçekleştir
+        print("Rezervasyon yapılıyor - Otel: \(hotel.hotelName), Kullanıcı: \(user.uid)")
+        
         // Rezervasyon işlemi burada yapılacak
-        print("Rezervasyon yapılıyor: \(hotel.hotelName)")
         // Burada rezervasyon API'si çağrılabilir veya telefon/email açılabilir
     }
     
@@ -409,12 +425,13 @@ struct HotelDetailView: View {
     }
 }
 
+
+
 // MARK: - ÖNİZLEME
 struct HotelsView_Previews: PreviewProvider {
     static var previews: some View {
         NavigationStack {
             HotelsView()
         }
-        
     }
 }

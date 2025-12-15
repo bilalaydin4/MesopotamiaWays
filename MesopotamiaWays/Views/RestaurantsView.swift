@@ -14,6 +14,7 @@
 
 import SwiftUI
 import MapKit
+import FirebaseAuth
 
 struct RestaurantsView: View {
     let restaurants: [RestaurantsModel] = [HamdaniRestaurant, leyli]
@@ -234,6 +235,7 @@ struct RestaurantCard: View {
 struct RestaurantDetailView: View {
     let restaurant: RestaurantsModel
     @State private var currentImageIndex = 0
+    @State private var showLoginView = false
     @Environment(\.presentationMode) var presentationMode
     @State private var showFullScreenMap = false
     
@@ -338,6 +340,34 @@ struct RestaurantDetailView: View {
                         .padding()
                         .background(Color.orange.opacity(0.1))
                         .cornerRadius(12)
+        
+                        
+                        // REZERVASYON BUTONU - GÜNCELLENDİ
+                        Button(action: {
+                            // Firebase Auth ile kullanıcı kontrolü
+                            if Auth.auth().currentUser != nil {
+                                // Kullanıcı giriş yapmışsa
+                                makeReservation()
+                            } else {
+                                // Kullanıcı giriş yapmamışsa
+                                showLoginView = true
+                            }
+                        }) {
+                            HStack {
+                                Image(systemName: "calendar.badge.plus")
+                                Text(Auth.auth().currentUser != nil ? "Rezervasyon Yap" : "Giriş Yaparak Rezervasyon Yap")
+                                Spacer()
+                                Image(systemName: "chevron.right")
+                            }
+                            .font(.headline)
+                            .foregroundColor(.white)
+                            .padding()
+                            .frame(maxWidth: .infinity)
+                            .background(Auth.auth().currentUser != nil ? Color.blue : Color.orange)
+                            .cornerRadius(12)
+                        }
+                        .padding(.top, 8)
+                        
                         
                         // YOL TARİFİ BUTONU
                         Button(action: {
@@ -353,10 +383,10 @@ struct RestaurantDetailView: View {
                             .foregroundColor(.white)
                             .padding()
                             .frame(maxWidth: .infinity)
-                            .background(Color.orange)
+                            .background(Color.blue)
                             .cornerRadius(12)
                         }
-                        .padding(.top, 8)
+                        .padding(.top, 4)
                         
                         // HARİTA - Restoranın İlk Resmi ile Annotation
                         VStack(alignment: .leading, spacing: 12) {
@@ -437,6 +467,25 @@ struct RestaurantDetailView: View {
                 FullScreenRestaurantMapView(restaurant: restaurant, isPresented: $showFullScreenMap)
             }
         }
+        // LoginView'i popup pencere olarak aç
+        .sheet(isPresented: $showLoginView) {
+            LoginView(isPresented: $showLoginView)
+        }
+    }
+   
+
+    
+    private func makeReservation() {
+        guard let user = Auth.auth().currentUser else {
+            showLoginView = true
+            return
+        }
+        
+        // Burada rezervasyon işlemini gerçekleştir
+        print("Rezervasyon yapılıyor - Otel: \(restaurant.name), Kullanıcı: \(user.uid)")
+        
+        // Rezervasyon işlemi burada yapılacak
+        // Burada rezervasyon API'si çağrılabilir veya telefon/email açılabilir
     }
     
     private func openInMapsForNavigation() {

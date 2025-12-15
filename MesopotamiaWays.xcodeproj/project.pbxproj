@@ -7,7 +7,13 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		53A38A352EDF95BC00053E01 /* YouTubeiOSPlayerHelper in Frameworks */ = {isa = PBXBuildFile; productRef = 53A38A342EDF95BC00053E01 /* YouTubeiOSPlayerHelper */; };
+		531D970A2EECE73A0069E2A3 /* FirebaseAI in Frameworks */ = {isa = PBXBuildFile; productRef = 53053D002EE83EB100CDD3C8 /* FirebaseAI */; };
+		531D970B2EECE73A0069E2A3 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 53053D022EE83EB100CDD3C8 /* FirebaseAnalytics */; };
+		531D970C2EECE73A0069E2A3 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 53053D042EE83EB100CDD3C8 /* FirebaseAuth */; };
+		531D970D2EECE73A0069E2A3 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 53053D062EE83EB100CDD3C8 /* FirebaseCore */; };
+		531D970E2EECE73A0069E2A3 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 53053D082EE83EB100CDD3C8 /* FirebaseFirestore */; };
+		531D970F2EECE73A0069E2A3 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 53053D0A2EE83EB100CDD3C8 /* FirebaseStorage */; };
+		53CEBF322EECDED300B647D5 /* YouTubeiOSPlayerHelper in Frameworks */ = {isa = PBXBuildFile; productRef = 53CEBF312EECDED300B647D5 /* YouTubeiOSPlayerHelper */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,7 +46,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				53A38A352EDF95BC00053E01 /* YouTubeiOSPlayerHelper in Frameworks */,
+				531D970F2EECE73A0069E2A3 /* FirebaseStorage in Frameworks */,
+				531D970E2EECE73A0069E2A3 /* FirebaseFirestore in Frameworks */,
+				531D970D2EECE73A0069E2A3 /* FirebaseCore in Frameworks */,
+				531D970C2EECE73A0069E2A3 /* FirebaseAuth in Frameworks */,
+				531D970B2EECE73A0069E2A3 /* FirebaseAnalytics in Frameworks */,
+				531D970A2EECE73A0069E2A3 /* FirebaseAI in Frameworks */,
+				53CEBF322EECDED300B647D5 /* YouTubeiOSPlayerHelper in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -83,7 +95,13 @@
 			);
 			name = MesopotamiaWays;
 			packageProductDependencies = (
-				53A38A342EDF95BC00053E01 /* YouTubeiOSPlayerHelper */,
+				53053D002EE83EB100CDD3C8 /* FirebaseAI */,
+				53053D022EE83EB100CDD3C8 /* FirebaseAnalytics */,
+				53053D042EE83EB100CDD3C8 /* FirebaseAuth */,
+				53053D062EE83EB100CDD3C8 /* FirebaseCore */,
+				53053D082EE83EB100CDD3C8 /* FirebaseFirestore */,
+				53053D0A2EE83EB100CDD3C8 /* FirebaseStorage */,
+				53CEBF312EECDED300B647D5 /* YouTubeiOSPlayerHelper */,
 			);
 			productName = MesopotamiaWays;
 			productReference = 53AC3DE32ED3D1A2007B39CD /* MesopotamiaWays.app */;
@@ -116,7 +134,8 @@
 			mainGroup = 53AC3DDA2ED3D1A2007B39CD;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				53A38A332EDF95BC00053E01 /* XCRemoteSwiftPackageReference "youtube-ios-player-helper" */,
+				53053CFF2EE83EB100CDD3C8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				53CEBF302EECDED300B647D5 /* XCRemoteSwiftPackageReference "youtube-ios-player-helper" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 53AC3DE42ED3D1A2007B39CD /* Products */;
@@ -286,8 +305,9 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -319,8 +339,9 @@
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.6;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -362,7 +383,15 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		53A38A332EDF95BC00053E01 /* XCRemoteSwiftPackageReference "youtube-ios-player-helper" */ = {
+		53053CFF2EE83EB100CDD3C8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.6.0;
+			};
+		};
+		53CEBF302EECDED300B647D5 /* XCRemoteSwiftPackageReference "youtube-ios-player-helper" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/youtube/youtube-ios-player-helper";
 			requirement = {
@@ -373,9 +402,39 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		53A38A342EDF95BC00053E01 /* YouTubeiOSPlayerHelper */ = {
+		53053D002EE83EB100CDD3C8 /* FirebaseAI */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = 53A38A332EDF95BC00053E01 /* XCRemoteSwiftPackageReference "youtube-ios-player-helper" */;
+			package = 53053CFF2EE83EB100CDD3C8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAI;
+		};
+		53053D022EE83EB100CDD3C8 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 53053CFF2EE83EB100CDD3C8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		53053D042EE83EB100CDD3C8 /* FirebaseAuth */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 53053CFF2EE83EB100CDD3C8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAuth;
+		};
+		53053D062EE83EB100CDD3C8 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 53053CFF2EE83EB100CDD3C8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		53053D082EE83EB100CDD3C8 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 53053CFF2EE83EB100CDD3C8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
+		};
+		53053D0A2EE83EB100CDD3C8 /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 53053CFF2EE83EB100CDD3C8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
+		};
+		53CEBF312EECDED300B647D5 /* YouTubeiOSPlayerHelper */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 53CEBF302EECDED300B647D5 /* XCRemoteSwiftPackageReference "youtube-ios-player-helper" */;
 			productName = YouTubeiOSPlayerHelper;
 		};
 /* End XCSwiftPackageProductDependency section */

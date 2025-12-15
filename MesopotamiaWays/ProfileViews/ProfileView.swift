@@ -6,9 +6,13 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 // Profil View (Örnek)
 struct ProfileView: View {
+    
+    let currentUser = Auth.auth().currentUser
+    
     var body: some View {
         Form {
             Section(header: Text("Hesap Bilgileri")) {
@@ -69,6 +73,15 @@ struct ProfileView: View {
                 }) {
                     Label("Geri Bildirim", systemImage: "envelope.fill")
                 }
+                
+                if (currentUser?.email) != nil {
+                    Button {
+                        // action
+                    } label: {
+                        Label("Admin Paneli", systemImage: "gearshape.fill")
+                    }
+                }
+   
             }
         }
         .navigationTitle("Profil")
