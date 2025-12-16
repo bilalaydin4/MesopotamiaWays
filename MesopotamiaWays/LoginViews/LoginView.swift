@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import FirebaseAuth
 
 // MARK: - Popup Login View
 struct LoginView: View {
@@ -177,6 +178,17 @@ struct LoginView: View {
     }
     
     private func signIn() {
+        
+        
+        
+        Auth.auth().createUser(withEmail: email, password: password) { authResult, error in
+            if error != nil {
+                
+            }else {
+                
+            }
+        }
+        
         // Firebase giriş işlemi - SİZ TAMAMLARSINIZ
         print("Giriş yapılıyor: \(email)")
         // Auth.auth().signIn(withEmail: email, password: password) { ... }
