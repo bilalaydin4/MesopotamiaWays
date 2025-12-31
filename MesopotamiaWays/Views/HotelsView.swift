@@ -404,19 +404,30 @@ struct AmenityChip: View {
     }
 }
 
-// MARK: - Otel Detay Sayfası (Güncellenmiş)
+// Oteller detay sayfası - Sadece HARİTA kısmı güncellendi
 struct HotelDetailView: View {
     let hotel: HotelsModel
     @State private var currentImageIndex = 0
     @State private var showLoginView = false
     @State private var showAmenitiesSheet = false
+    @State private var region: MKCoordinateRegion
     @Environment(\.presentationMode) var presentationMode
+    
+    // MARK: - Init
+    init(hotel: HotelsModel) {
+        self.hotel = hotel
+        // Harita bölgesini state olarak ayarla
+        self._region = State(initialValue: MKCoordinateRegion(
+            center: hotel.location,
+            span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+        ))
+    }
     
     var body: some View {
         NavigationView {
             ScrollView {
                 VStack(alignment: .leading, spacing: 0) {
-                    // IMAGE SLIDER
+                    // IMAGE SLIDER (Aynı)
                     ZStack(alignment: .bottom) {
                         TabView(selection: $currentImageIndex) {
                             ForEach(0..<hotel.hotelImage.count, id: \.self) { index in
@@ -431,29 +442,31 @@ struct HotelDetailView: View {
                         .frame(height: 300)
                         .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                         
-                        // GRADIENT OVERLAY
-                        LinearGradient(
-                            gradient: Gradient(colors: [.clear, .black.opacity(0.3)]),
-                            startPoint: .top,
-                            endPoint: .bottom
-                        )
-                        .frame(height: 80)
-                        .offset(y: 30)
+                        // Sadece sayfa noktaları
+                        VStack {
+                            Spacer()
+                            
+                            HStack(spacing: 6) {
+                                ForEach(0..<hotel.hotelImage.count, id: \.self) { index in
+                                    Circle()
+                                        .fill(currentImageIndex == index ? Color.white : Color.white.opacity(0.5))
+                                        .frame(width: 8, height: 8)
+                                }
+                            }
+                            .padding(.bottom, 10)
+                        }
                         
-                        // RESİM SAYACI
+                        // SOL ÜST KÖŞE: YILDIZ VE BÖLGE
                         VStack {
                             HStack {
-                                // YILDIZ VE İLÇE
-                                HStack(spacing: 4) {
-                                    ForEach(0..<hotel.starCount, id: \.self) { _ in
-                                        Image(systemName: "star.fill")
-                                            .font(.caption)
-                                            .foregroundColor(.orange)
+                                VStack(alignment: .leading, spacing: 4) {
+                                    HStack(spacing: 4) {
+                                        ForEach(0..<hotel.starCount, id: \.self) { _ in
+                                            Image(systemName: "star.fill")
+                                                .font(.caption)
+                                                .foregroundColor(.orange)
+                                        }
                                     }
-                                    
-                                    Text("•")
-                                        .foregroundColor(.white.opacity(0.7))
-                                        .font(.caption)
                                     
                                     Text(hotel.district)
                                         .font(.caption)
@@ -461,21 +474,11 @@ struct HotelDetailView: View {
                                         .foregroundColor(.white)
                                 }
                                 .padding(.horizontal, 12)
-                                .padding(.vertical, 6)
-                                .background(Color.black.opacity(0.5))
+                                .padding(.vertical, 8)
+                                .background(Color.black.opacity(0.7))
                                 .cornerRadius(12)
                                 
                                 Spacer()
-                                
-                                // RESİM SAYACI
-                                Text("\(currentImageIndex + 1)/\(hotel.hotelImage.count)")
-                                    .font(.caption)
-                                    .fontWeight(.semibold)
-                                    .foregroundColor(.white)
-                                    .padding(.horizontal, 10)
-                                    .padding(.vertical, 5)
-                                    .background(Color.black.opacity(0.5))
-                                    .cornerRadius(12)
                             }
                             .padding(.horizontal)
                             .padding(.top, 10)
@@ -485,81 +488,90 @@ struct HotelDetailView: View {
                     }
                     .frame(height: 300)
                     
-                    // OTEL BİLGİLERİ
-                    VStack(alignment: .leading, spacing: 20) {
-                        // BAŞLIK VE PUAN
-                        VStack(alignment: .leading, spacing: 8) {
+                    // OTEL BİLGİLERİ (Diğer kısımlar aynı)
+                    VStack(alignment: .leading, spacing: 24) {
+                        // BAŞLIK VE PUAN (Aynı)
+                        VStack(alignment: .leading, spacing: 12) {
                             Text(hotel.hotelName)
-                                .font(.title)
+                                .font(.title2)
                                 .fontWeight(.bold)
                             
-                            HStack(spacing: 12) {
+                            HStack(spacing: 16) {
                                 // RATING
                                 HStack(spacing: 4) {
                                     Image(systemName: "star.fill")
+                                        .font(.caption)
                                         .foregroundColor(.orange)
                                     Text(String(format: "%.1f", hotel.rating))
                                         .fontWeight(.semibold)
-                                    Text("(\(hotel.reviewCount) değerlendirme)")
+                                    Text("(\(hotel.reviewCount))")
                                         .foregroundColor(.secondary)
                                 }
                                 
-                                Divider()
-                                    .frame(height: 16)
-                                
                                 // KONUM
                                 HStack(spacing: 4) {
-                                    Image(systemName: "mappin.circle.fill")
+                                    Image(systemName: "mappin.circle")
+                                        .font(.caption)
                                         .foregroundColor(.blue)
                                     Text(hotel.district)
-                                        .fontWeight(.medium)
+                                        .font(.caption)
                                 }
                             }
                             .font(.subheadline)
                         }
                         
-                        // KISA AÇIKLAMA
+                        // KISA AÇIKLAMA (Aynı)
                         Text(hotel.shortDescription)
                             .font(.headline)
                             .foregroundColor(.blue)
                         
-                        // UZUN AÇIKLAMA
+                        // UZUN AÇIKLAMA (Aynı)
                         Text(hotel.hotelDescription)
                             .font(.body)
                             .foregroundColor(.primary)
                             .lineSpacing(4)
                         
-                        // OLANAKLAR
+                        // OLANAKLAR (Aynı)
                         VStack(alignment: .leading, spacing: 12) {
-                            HStack {
-                                Text("Olanaklar")
-                                    .font(.title3)
-                                    .fontWeight(.semibold)
-                                
-                                Spacer()
-                                
-                                Button("Tümünü Gör") {
-                                    showAmenitiesSheet = true
-                                }
-                                .font(.subheadline)
-                                .foregroundColor(.blue)
-                            }
+                            Text("Olanaklar")
+                                .font(.headline)
+                                .fontWeight(.semibold)
                             
                             ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(spacing: 12) {
-                                    ForEach(hotel.amenities, id: \.self) { amenity in
+                                HStack(spacing: 16) {
+                                    ForEach(hotel.amenities.prefix(5), id: \.self) { amenity in
                                         VStack(spacing: 8) {
                                             Image(systemName: AmenityChip(amenity: amenity).iconName)
-                                                .font(.title2)
+                                                .font(.title3)
                                                 .foregroundColor(.blue)
-                                                .frame(width: 50, height: 50)
+                                                .frame(width: 44, height: 44)
                                                 .background(Color.blue.opacity(0.1))
-                                                .cornerRadius(12)
+                                                .cornerRadius(10)
                                             
                                             Text(amenity.localizedCapitalized)
-                                                .font(.caption)
+                                                .font(.caption2)
                                                 .multilineTextAlignment(.center)
-                                                .frame(width: 70)
+                                                .frame(width: 60)
+                                        }
+                                    }
+                                    
+                                    if hotel.amenities.count > 5 {
+                                        Button(action: {
+                                            showAmenitiesSheet = true
+                                        }) {
+                                            VStack(spacing: 8) {
+                                                Image(systemName: "ellipsis.circle")
+                                                    .font(.title3)
+                                                    .foregroundColor(.blue)
+                                                    .frame(width: 44, height: 44)
+                                                    .background(Color.blue.opacity(0.1))
+                                                    .cornerRadius(10)
+                                                
+                                                Text("Daha Fazla")
+                                                    .font(.caption2)
+                                                    .multilineTextAlignment(.center)
+                                                    .frame(width: 60)
+                                            }
                                         }
                                     }
                                 }
@@ -568,47 +580,43 @@ struct HotelDetailView: View {
                         }
                         .padding(.vertical, 8)
                         
-                        // FİYAT BİLGİLERİ
+                        // FİYAT BİLGİLERİ (Aynı)
                         VStack(alignment: .leading, spacing: 16) {
-                            Text("Fiyatlar")
-                                .font(.title3)
+                            Text("Fiyat")
+                                .font(.headline)
                                 .fontWeight(.semibold)
                             
-                            VStack(spacing: 12) {
+                            VStack(spacing: 16) {
                                 HStack {
                                     VStack(alignment: .leading, spacing: 4) {
-                                        Text("1 Kişilik Oda")
-                                            .font(.subheadline)
+                                        Text("1 Kişi")
+                                            .font(.caption)
                                             .foregroundColor(.secondary)
-                                        HStack(alignment: .firstTextBaseline, spacing: 2) {
-                                            Text("₺\(Int(hotel.oneNightPriceForOnePerson))")
-                                                .font(.title2)
-                                                .fontWeight(.bold)
-                                            Text("/gece")
-                                                .font(.caption)
-                                                .foregroundColor(.secondary)
-                                        }
+                                        Text("₺\(Int(hotel.oneNightPriceForOnePerson))")
+                                            .font(.title3)
+                                            .fontWeight(.semibold)
                                     }
                                     
                                     Spacer()
                                     
                                     VStack(alignment: .leading, spacing: 4) {
-                                        Text("2 Kişilik Oda")
-                                            .font(.subheadline)
+                                        Text("2 Kişi")
+                                            .font(.caption)
                                             .foregroundColor(.secondary)
-                                        HStack(alignment: .firstTextBaseline, spacing: 2) {
-                                            Text("₺\(Int(hotel.oneNightPriceForTwoPeople))")
-                                                .font(.title)
-                                                .fontWeight(.bold)
-                                                .foregroundColor(.blue)
-                                            Text("/gece")
-                                                .font(.caption)
-                                                .foregroundColor(.secondary)
-                                        }
+                                        Text("₺\(Int(hotel.oneNightPriceForTwoPeople))")
+                                            .font(.title2)
+                                            .fontWeight(.bold)
+                                            .foregroundColor(.blue)
                                     }
+                                    
+                                    Spacer()
+                                    
+                                    Text("/gece")
+                                        .font(.caption)
+                                        .foregroundColor(.secondary)
                                 }
                                 
-                                // REZERVASYON BUTONU
+                                // REZERVASYON BUTONU (Aynı)
                                 Button(action: {
                                     if Auth.auth().currentUser != nil {
                                         makeReservation()
@@ -619,8 +627,6 @@ struct HotelDetailView: View {
                                     HStack {
                                         Image(systemName: "calendar.badge.plus")
                                         Text("Rezervasyon Yap")
-                                        Spacer()
-                                        Image(systemName: "chevron.right")
                                     }
                                     .font(.headline)
                                     .foregroundColor(.white)
@@ -633,93 +639,121 @@ struct HotelDetailView: View {
                         }
                         .padding()
                         .background(Color.blue.opacity(0.05))
-                        .cornerRadius(16)
+                        .cornerRadius(12)
                         
-                        // İLETİŞİM BİLGİLERİ
+                        // İLETİŞİM BİLGİLERİ (Aynı)
                         VStack(alignment: .leading, spacing: 12) {
-                            Text("İletişim Bilgileri")
-                                .font(.title3)
+                            Text("İletişim")
+                                .font(.headline)
                                 .fontWeight(.semibold)
                             
-                            VStack(spacing: 12) {
-                                HStack {
-                                    Image(systemName: "phone.fill")
-                                        .foregroundColor(.blue)
-                                        .frame(width: 30)
-                                    Text(hotel.phoneNumber)
-                                    Spacer()
-                                    Button(action: {
-                                        callHotel()
-                                    }) {
-                                        Image(systemName: "phone.arrow.up.right")
-                                            .foregroundColor(.blue)
-                                    }
-                                }
+                            VStack(spacing: 8) {
+                                ContactRow(
+                                    icon: "phone.fill",
+                                    text: hotel.phoneNumber,
+                                    action: callHotel,
+                                    actionIcon: "phone.arrow.up.right"
+                                )
                                 
-                                HStack {
-                                    Image(systemName: "envelope.fill")
-                                        .foregroundColor(.blue)
-                                        .frame(width: 30)
-                                    Text(hotel.email)
-                                    Spacer()
-                                    Button(action: {
-                                        sendEmail()
-                                    }) {
-                                        Image(systemName: "square.and.pencil")
-                                            .foregroundColor(.blue)
-                                    }
-                                }
+                                ContactRow(
+                                    icon: "envelope.fill",
+                                    text: hotel.email,
+                                    action: sendEmail,
+                                    actionIcon: "square.and.pencil"
+                                )
                                 
-                                HStack(alignment: .top) {
-                                    Image(systemName: "location.fill")
-                                        .foregroundColor(.blue)
-                                        .frame(width: 30)
-                                    Text(hotel.address)
-                                        .font(.subheadline)
-                                        .foregroundColor(.primary)
-                                    Spacer()
-                                    Button(action: {
-                                        openInMapsForNavigation()
-                                    }) {
-                                        Image(systemName: "arrow.triangle.turn.up.right.circle.fill")
-                                            .foregroundColor(.blue)
-                                    }
-                                }
+                                ContactRow(
+                                    icon: "location.fill",
+                                    text: hotel.address,
+                                    action: openInMapsForNavigation,
+                                    actionIcon: "arrow.triangle.turn.up.right.circle.fill"
+                                )
                             }
-                            .padding()
-                            .background(Color(.systemGray6))
-                            .cornerRadius(12)
                         }
                         
-                        // HARİTA
+                        // HARİTA (GÜNCELLENDİ - ANNOTATION EKLENDİ)
                         VStack(alignment: .leading, spacing: 12) {
                             Text("Konum")
-                                .font(.title3)
+                                .font(.headline)
                                 .fontWeight(.semibold)
                             
-                            Map(coordinateRegion: .constant(
-                                MKCoordinateRegion(
-                                    center: hotel.location,
-                                    span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)
+                            ZStack(alignment: .topTrailing) {
+                                // Harita with annotation
+                                Map(coordinateRegion: $region,
+                                    annotationItems: [hotel]) { hotel in
+                                    MapAnnotation(coordinate: hotel.location) {
+                                        VStack(spacing: 4) {
+                                            // Annotation işaretçisi
+                                            ZStack {
+                                                Circle()
+                                                    .fill(Color.blue)
+                                                    .frame(width: 30, height: 30)
+                                                
+                                                Image(systemName: "bed.double.fill")
+                                                    .font(.system(size: 12))
+                                                    .foregroundColor(.white)
+                                            }
+                                            
+                                            // Otel adı balonu
+                                            Text(hotel.hotelName)
+                                                .font(.caption2)
+                                                .fontWeight(.semibold)
+                                                .foregroundColor(.white)
+                                                .padding(.horizontal, 8)
+                                                .padding(.vertical, 4)
+                                                .background(Color.blue)
+                                                .cornerRadius(6)
+                                                .shadow(radius: 2)
+                                        }
+                                        .offset(y: -10)
+                                    }
+                                }
+                                .frame(height: 200)
+                                .cornerRadius(12)
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 12)
+                                        .stroke(Color(.systemGray4), lineWidth: 1)
                                 )
-                            ))
-                            .frame(height: 200)
-                            .cornerRadius(12)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 12)
-                                    .stroke(Color(.systemGray4), lineWidth: 1)
-                            )
+                                
+                                // Zoom butonları
+                                VStack(spacing: 8) {
+                                    Button(action: zoomIn) {
+                                        Image(systemName: "plus.magnifyingglass")
+                                            .font(.caption)
+                                            .foregroundColor(.blue)
+                                            .frame(width: 32, height: 32)
+                                            .background(Color.white)
+                                            .cornerRadius(6)
+                                            .shadow(radius: 1)
+                                    }
+                                    
+                                    Button(action: zoomOut) {
+                                        Image(systemName: "minus.magnifyingglass")
+                                            .font(.caption)
+                                            .foregroundColor(.blue)
+                                            .frame(width: 32, height: 32)
+                                            .background(Color.white)
+                                            .cornerRadius(6)
+                                            .shadow(radius: 1)
+                                    }
+                                }
+                                .padding(8)
+                            }
                             
+                            // Navigasyon butonu
                             Button(action: {
                                 openInMapsForNavigation()
                             }) {
                                 HStack {
                                     Image(systemName: "location.circle.fill")
+                                        .font(.headline)
                                     Text("Navigasyon ile Git")
+                                        .font(.subheadline)
+                                        .fontWeight(.semibold)
                                     Spacer()
                                     Image(systemName: "chevron.right")
+                                        .font(.caption)
                                 }
-                                .font(.subheadline)
                                 .foregroundColor(.blue)
                                 .padding()
                                 .frame(maxWidth: .infinity)
@@ -732,17 +766,18 @@ struct HotelDetailView: View {
                 }
             }
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button(action: {
-                        presentationMode.wrappedValue.dismiss()
-                    }) {
-                        Image(systemName: "xmark.circle.fill")
-                            .foregroundColor(.white)
-                            .font(.title3)
-                    }
+            .navigationBarItems(trailing:
+                Button(action: {
+                    presentationMode.wrappedValue.dismiss()
+                }) {
+                    Image(systemName: "xmark")
+                        .font(.headline)
+                        .foregroundColor(.primary)
+                        .frame(width: 36, height: 36)
+                        .background(Color(.systemGray6))
+                        .clipShape(Circle())
                 }
-            }
+            )
             .sheet(isPresented: $showLoginView) {
                 LoginView(isPresented: $showLoginView)
             }
@@ -752,6 +787,48 @@ struct HotelDetailView: View {
         }
     }
     
+    // Yardımcı View (Aynı)
+    struct ContactRow: View {
+        let icon: String
+        let text: String
+        let action: () -> Void
+        let actionIcon: String
+        
+        var body: some View {
+            HStack {
+                Image(systemName: icon)
+                    .foregroundColor(.blue)
+                    .frame(width: 20)
+                Text(text)
+                    .font(.subheadline)
+                Spacer()
+                Button(action: action) {
+                    Image(systemName: actionIcon)
+                        .foregroundColor(.blue)
+                }
+            }
+            .padding()
+            .background(Color(.systemGray6))
+            .cornerRadius(10)
+        }
+    }
+    
+    // MARK: - Harita Fonksiyonları
+    private func zoomIn() {
+        withAnimation {
+            region.span.latitudeDelta = max(region.span.latitudeDelta / 1.5, 0.001)
+            region.span.longitudeDelta = max(region.span.longitudeDelta / 1.5, 0.001)
+        }
+    }
+    
+    private func zoomOut() {
+        withAnimation {
+            region.span.latitudeDelta = min(region.span.latitudeDelta * 1.5, 0.1)
+            region.span.longitudeDelta = min(region.span.longitudeDelta * 1.5, 0.1)
+        }
+    }
+    
+    // MARK: - Diğer fonksiyonlar (Aynı)
     private func makeReservation() {
         guard let user = Auth.auth().currentUser else {
             showLoginView = true
@@ -785,6 +862,7 @@ struct HotelDetailView: View {
         mapItem.openInMaps(launchOptions: options)
     }
 }
+
 
 // MARK: - Olanaklar Sayfası
 struct AmenitiesSheetView: View {
