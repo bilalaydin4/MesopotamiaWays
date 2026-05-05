@@ -411,7 +411,7 @@ struct PlaceDetailView: View {
 
 
 
-// MARK: - YouTube Player (Eski hali korundu)
+// MARK: - YouTube Player 
 struct YouTubeFixedPlayer: View {
     let videoID: String
     
