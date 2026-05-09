@@ -6,6 +6,7 @@
 import SwiftUI
 import MapKit
 import YouTubeiOSPlayerHelper
+import SDWebImageSwiftUI
 
 struct PlaceDetailView: View {
     let place: PlacesModel
@@ -28,8 +29,10 @@ struct PlaceDetailView: View {
                 ZStack(alignment: .bottom) {
                     TabView(selection: $currentImageIndex) {
                         ForEach(0..<place.imageName.count, id: \.self) { index in
-                            Image(place.imageName[index])
+                            WebImage(url: URL(string: place.imageName[index]))
                                 .resizable()
+                                .indicator(.activity)
+                                .transition(.fade(duration: 0.5))
                                 .aspectRatio(contentMode: .fill)
                                 .frame(height: 320)
                                 .clipped()
@@ -170,7 +173,7 @@ struct PlaceDetailView: View {
                                 .frame(height: 220) // Sabit yükseklik
                                 .cornerRadius(0)
                         }
-                        .background(Color.white)
+                        .background(Color(.systemBackground))
                         .cornerRadius(12)
                         .shadow(color: .gray.opacity(0.2), radius: 4, x: 0, y: 2)
                         .padding(.vertical, 16)
@@ -249,7 +252,7 @@ struct PlaceDetailView: View {
                                     Image(systemName: "plus.circle.fill")
                                         .font(.title3)
                                         .foregroundColor(.blue)
-                                        .background(Color.white)
+                                        .background(Color(.systemBackground))
                                         .clipShape(Circle())
                                 }
                                 
@@ -257,7 +260,7 @@ struct PlaceDetailView: View {
                                     Image(systemName: "minus.circle.fill")
                                         .font(.title3)
                                         .foregroundColor(.blue)
-                                        .background(Color.white)
+                                        .background(Color(.systemBackground))
                                         .clipShape(Circle())
                                 }
                                 
@@ -265,12 +268,12 @@ struct PlaceDetailView: View {
                                     Image(systemName: "location.fill")
                                         .font(.title3)
                                         .foregroundColor(.blue)
-                                        .background(Color.white)
+                                        .background(Color(.systemBackground))
                                         .clipShape(Circle())
                                 }
                             }
                             .padding(8)
-                            .background(Color.white.opacity(0.9))
+                            .background(Color(.systemBackground).opacity(0.9))
                             .cornerRadius(12)
                             .shadow(radius: 2)
                             .padding(12)
@@ -452,14 +455,14 @@ struct YouTubeFixedPlayer: View {
             
           
         }
-        .background(Color.white)
+        .background(Color(.systemBackground))
         .cornerRadius(12)
         .shadow(color: .gray.opacity(0.2), radius: 4, x: 0, y: 2)
     }
 }
 
-#Preview {
-    NavigationView {
-        PlaceDetailView(place: mardin)
-    }
-}
+// struct PlaceDetailView_Previews: PreviewProvider {
+//     static var previews: some View {
+//         PlaceDetailView(place: mardin)
+//     }
+// }

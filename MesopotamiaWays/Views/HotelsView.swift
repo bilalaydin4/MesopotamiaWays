@@ -8,21 +8,23 @@
 import SwiftUI
 import MapKit
 import FirebaseAuth
+import SDWebImageSwiftUI
 
 struct HotelsView: View {
-    let hotels: [HotelsModel] = [buyukMardinOteli, midyatSarayi, yayGrand]
+    // let hotels: [HotelsModel] = [buyukMardinOteli, midyatSarayi, yayGrand]
+    @EnvironmentObject var viewModel: MainViewModel
     @State private var searchText = ""
     @State private var selectedDistrict = "Tümü"
     @State private var selectedHotel: HotelsModel?
     @State private var showHotelDetail = false
     
     var mardinDistricts: [String] {
-        let allDistricts = ["Tümü"] + Array(Set(hotels.map { $0.district })).sorted()
+        let allDistricts = ["Tümü"] + Array(Set(viewModel.hotels.map { $0.district })).sorted()
         return allDistricts
     }
     
     var filteredHotels: [HotelsModel] {
-        var result = hotels
+        var result = viewModel.hotels
         
         // İlçe filtresi
         if selectedDistrict != "Tümü" {
@@ -104,7 +106,7 @@ struct HotelsView: View {
                     .padding(.horizontal)
                 }
             }
-            .background(Color.white)
+            .background(Color(.systemBackground))
             
             // OTEL LİSTESİ
             ScrollView {
@@ -172,6 +174,9 @@ struct HotelsView: View {
                         .padding(.top, 8)
                     }
                 }
+                .refreshable {
+                    viewModel.fetchAllData()
+                }
             }
             .background(Color(.systemGroupedBackground))
         }
@@ -229,11 +234,15 @@ struct HotelCard: View {
             ZStack(alignment: .topLeading) {
                 TabView {
                     ForEach(hotel.hotelImage.prefix(3), id: \.self) { imageName in
-                        Image(imageName)
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(height: 180)
-                            .clipped()
+                        if let url = URL(string: imageName) {
+                            WebImage(url: url)
+                                .resizable()
+                                .indicator(.activity)
+                                .transition(.fade(duration: 0.5))
+                                .aspectRatio(contentMode: .fill)
+                                .frame(height: 180)
+                                .clipped()
+                        }
                     }
                 }
                 .frame(height: 180)
@@ -362,7 +371,7 @@ struct HotelCard: View {
             .padding(.horizontal, 12)
             .padding(.bottom, 12)
         }
-        .background(Color.white)
+        .background(Color(.secondarySystemGroupedBackground))
         .cornerRadius(16)
         .shadow(color: .black.opacity(0.05), radius: 10, x: 0, y: 2)
         .overlay(
@@ -431,12 +440,16 @@ struct HotelDetailView: View {
                     ZStack(alignment: .bottom) {
                         TabView(selection: $currentImageIndex) {
                             ForEach(0..<hotel.hotelImage.count, id: \.self) { index in
-                                Image(hotel.hotelImage[index])
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                                    .frame(height: 300)
-                                    .clipped()
-                                    .tag(index)
+                                if let url = URL(string: hotel.hotelImage[index]) {
+                                    WebImage(url: url)
+                                        .resizable()
+                                        .indicator(.activity)
+                                        .transition(.fade(duration: 0.5))
+                                        .aspectRatio(contentMode: .fill)
+                                        .frame(height: 300)
+                                        .clipped()
+                                        .tag(index)
+                                }
                             }
                         }
                         .frame(height: 300)

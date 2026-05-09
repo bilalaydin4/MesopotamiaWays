@@ -256,8 +256,8 @@ struct LegendItem: View {
     }
 }
 
-#Preview {
-    NavigationView {
-        MapView(places: placesss, hotels: hotels, restaurants: resturans)
-    }
-}
+// #Preview {
+//     NavigationView {
+//         MapView(places: placesss, hotels: hotels, restaurants: resturans)
+//     }
+// }

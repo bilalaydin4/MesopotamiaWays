@@ -13,6 +13,7 @@
 		531D970D2EECE73A0069E2A3 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 53053D062EE83EB100CDD3C8 /* FirebaseCore */; };
 		531D970E2EECE73A0069E2A3 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 53053D082EE83EB100CDD3C8 /* FirebaseFirestore */; };
 		531D970F2EECE73A0069E2A3 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 53053D0A2EE83EB100CDD3C8 /* FirebaseStorage */; };
+		539807F72FAF3906008DFC8F /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = 539807F62FAF3906008DFC8F /* SDWebImageSwiftUI */; };
 		53CEBF322EECDED300B647D5 /* YouTubeiOSPlayerHelper in Frameworks */ = {isa = PBXBuildFile; productRef = 53CEBF312EECDED300B647D5 /* YouTubeiOSPlayerHelper */; };
 /* End PBXBuildFile section */
 
@@ -50,6 +51,7 @@
 				531D970E2EECE73A0069E2A3 /* FirebaseFirestore in Frameworks */,
 				531D970D2EECE73A0069E2A3 /* FirebaseCore in Frameworks */,
 				531D970C2EECE73A0069E2A3 /* FirebaseAuth in Frameworks */,
+				539807F72FAF3906008DFC8F /* SDWebImageSwiftUI in Frameworks */,
 				531D970B2EECE73A0069E2A3 /* FirebaseAnalytics in Frameworks */,
 				531D970A2EECE73A0069E2A3 /* FirebaseAI in Frameworks */,
 				53CEBF322EECDED300B647D5 /* YouTubeiOSPlayerHelper in Frameworks */,
@@ -102,6 +104,7 @@
 				53053D082EE83EB100CDD3C8 /* FirebaseFirestore */,
 				53053D0A2EE83EB100CDD3C8 /* FirebaseStorage */,
 				53CEBF312EECDED300B647D5 /* YouTubeiOSPlayerHelper */,
+				539807F62FAF3906008DFC8F /* SDWebImageSwiftUI */,
 			);
 			productName = MesopotamiaWays;
 			productReference = 53AC3DE32ED3D1A2007B39CD /* MesopotamiaWays.app */;
@@ -136,6 +139,7 @@
 			packageReferences = (
 				53053CFF2EE83EB100CDD3C8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				53CEBF302EECDED300B647D5 /* XCRemoteSwiftPackageReference "youtube-ios-player-helper" */,
+				539807F52FAF3906008DFC8F /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 53AC3DE42ED3D1A2007B39CD /* Products */;
@@ -391,6 +395,14 @@
 				minimumVersion = 12.6.0;
 			};
 		};
+		539807F52FAF3906008DFC8F /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SDWebImage/SDWebImageSwiftUI.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.1.4;
+			};
+		};
 		53CEBF302EECDED300B647D5 /* XCRemoteSwiftPackageReference "youtube-ios-player-helper" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/youtube/youtube-ios-player-helper";
@@ -431,6 +443,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 53053CFF2EE83EB100CDD3C8 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseStorage;
+		};
+		539807F62FAF3906008DFC8F /* SDWebImageSwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 539807F52FAF3906008DFC8F /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
+			productName = SDWebImageSwiftUI;
 		};
 		53CEBF312EECDED300B647D5 /* YouTubeiOSPlayerHelper */ = {
 			isa = XCSwiftPackageProductDependency;

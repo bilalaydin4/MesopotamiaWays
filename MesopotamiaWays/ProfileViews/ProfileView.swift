@@ -66,8 +66,8 @@ struct ProfileView: View {
                         Label("Tema", systemImage: "paintpalette.fill")
                     }
                     
-                    if profile.isActive {
-                        NavigationLink(destination: Text("Admin Paneli")) {
+                    if profile.email.lowercased() == "bilalaydin@gmail.com" {
+                        NavigationLink(destination: AdminMainView()) {
                             Label("Admin Paneli", systemImage: "gearshape.fill")
                                 .foregroundColor(.blue)
                         }
@@ -205,26 +205,29 @@ struct ProfileView: View {
             self.isLoading = false
             
             if let error = error {
-                self.errorMessage = "Kullanıcı bilgileri yüklenemedi: \(error.localizedDescription)"
-                return
+                print("Error fetching user document: \(error.localizedDescription)")
             }
             
-            guard let document = document, document.exists,
-                  let data = document.data() else {
-                self.errorMessage = "Kullanıcı bilgileri bulunamadı"
-                return
-            }
-            
-            if let firstName = data["firstName"] as? String,
-               let lastName = data["lastName"] as? String,
-               let email = data["email"] as? String,
-               let isActive = data["isActive"] as? Bool {
+            if let document = document, document.exists, let data = document.data() {
+                let firstName = data["firstName"] as? String ?? ""
+                let lastName = data["lastName"] as? String ?? ""
+                let email = data["email"] as? String ?? currentUser.email ?? ""
+                let isActive = data["isActive"] as? Bool ?? true
                 
                 self.userProfile = UserProfile(
                     firstName: firstName,
                     lastName: lastName,
                     email: email,
                     isActive: isActive
+                )
+                self.errorMessage = ""
+            } else {
+                // Eğer Firestore'da belge yoksa veya yüklenemediyse bile Firebase Auth verisini kullan
+                self.userProfile = UserProfile(
+                    firstName: "Kullanıcı",
+                    lastName: "",
+                    email: currentUser.email ?? "",
+                    isActive: true
                 )
                 self.errorMessage = ""
             }

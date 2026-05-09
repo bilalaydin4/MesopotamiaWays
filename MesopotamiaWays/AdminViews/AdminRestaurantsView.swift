@@ -14,6 +14,7 @@
 
 import SwiftUI
 import PhotosUI
+import FirebaseFirestore
 
 struct AdminRestaurantsView: View {
     @State private var restaurantName = ""
@@ -32,6 +33,7 @@ struct AdminRestaurantsView: View {
     @State private var website = ""
     @State private var rating = 0.0
     @State private var reviewCount = 0
+    @State private var selectedFeatures: [String] = []
     
     @State private var nextId = 3
     @State private var showSuccessAlert = false
@@ -221,7 +223,7 @@ struct AdminRestaurantsView: View {
                         
                         // ÖZELLİKLER
                         CardView(title: "Restoran Özellikleri") {
-                            RestaurantFeaturesView()
+                            RestaurantFeaturesView(selectedFeatures: $selectedFeatures)
                         }
                     }
                     .padding(.horizontal)
@@ -303,31 +305,52 @@ struct AdminRestaurantsView: View {
         
         isProcessing = true
         
-        // Burada Firebase'e kaydetme işlemi yapılacak
-        // Önce resimleri Firebase Storage'a yükle
-        // Sonra restoran bilgilerini Firestore'a kaydet
-        
-        print("Firebase'e eklenecek restoran:")
-        print("""
-        ID: \(nextId)
-        Ad: \(restaurantName)
-        Şehir: \(selectedCity)
-        İlçe: \(selectedDistrict)
-        Kategori: \(category)
-        Resim Sayısı: \(selectedImages.count)
-        """)
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            // ID'yi artır
-            nextId += 1
+        StorageManager.shared.uploadImages(images: selectedImages, folder: "restaurants") { urls in
+            if urls.isEmpty {
+                self.validationMessage = "Resimler yüklenirken bir hata oluştu."
+                self.showValidationError = true
+                self.isProcessing = false
+                return
+            }
             
-            // Başarı mesajı göster
-            showSuccessAlert = true
+            let db = Firestore.firestore()
+            let newRef = db.collection("restaurants").document()
             
-            // Formu temizle
-            clearForm()
+            let restaurantData: [String: Any] = [
+                // "id": newRef.documentID,
+                "name": restaurantName,
+                "description": restaurantDescription,
+                "image": urls,
+                "coordinate": [
+                    "latitude": Double(latitude) ?? 0.0,
+                    "longitude": Double(longitude) ?? 0.0
+                ],
+                "category": category,
+                "priceRange": priceRange,
+                "openingHours": openingHours,
+                "phoneNumber": phoneNumber,
+                "email": email,
+                "website": website,
+                "address": address,
+                "city": selectedCity,
+                "district": selectedDistrict,
+                "rating": rating,
+                "reviewCount": reviewCount,
+                "features": selectedFeatures
+            ]
             
-            isProcessing = false
+            newRef.setData(restaurantData) { error in
+                DispatchQueue.main.async {
+                    self.isProcessing = false
+                    if let error = error {
+                        self.validationMessage = "Firestore'a kaydedilirken hata oluştu: \(error.localizedDescription)"
+                        self.showValidationError = true
+                    } else {
+                        self.showSuccessAlert = true
+                        self.clearForm()
+                    }
+                }
+            }
         }
     }
     
@@ -389,7 +412,7 @@ struct AdminRestaurantsView: View {
 
 // MARK: - Restoran Özellikleri Bileşeni
 struct RestaurantFeaturesView: View {
-    @State private var selectedFeatures: [String] = []
+    @Binding var selectedFeatures: [String]
     
     let features = [
         ("Wi-Fi", "wifi"),

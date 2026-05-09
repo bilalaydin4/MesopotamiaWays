@@ -7,6 +7,7 @@
 
 
 import SwiftUI
+import SDWebImageSwiftUI
 
 // MARK: - Yer Kartı Bileşeni
 struct PlaceCard: View {
@@ -14,12 +15,14 @@ struct PlaceCard: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
-            // GÖRSEL
-            Image(place.imageName[0])
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(height: 160)
-                .clipped()
+            if let firstImage = place.imageName.first, let url = URL(string: firstImage) {
+                WebImage(url: url)
+                    .resizable()
+                    .indicator(.activity)
+                    .transition(.fade(duration: 0.5))
+                    .aspectRatio(contentMode: .fill)
+                    .frame(height: 160)
+                    .clipped()
                 .overlay(
                     LinearGradient(
                         gradient: Gradient(colors: [.clear, .black.opacity(0.3)]),
@@ -42,6 +45,12 @@ struct PlaceCard: View {
                         .padding(8)
                     }
                 )
+            } else {
+                Rectangle()
+                    .fill(Color.gray.opacity(0.3))
+                    .frame(height: 160)
+                    .overlay(Image(systemName: "photo").foregroundColor(.gray))
+            }
             
             // İÇERİK
             VStack(alignment: .leading, spacing: 8) {
@@ -66,13 +75,14 @@ struct PlaceCard: View {
             .padding(.horizontal, 12)
             .padding(.bottom, 12)
         }
-        .background(Color.white)
+        .background(Color(.secondarySystemGroupedBackground))
         .cornerRadius(12)
-        .shadow(color: .gray.opacity(0.2), radius: 4, x: 0, y: 2)
+        .shadow(color: Color.primary.opacity(0.15), radius: 4, x: 0, y: 2)
     }
 }
 
-#Preview {
-    PlaceCard(place: mardin)
-}
-
+// #Preview {
+//     PlaceCard(place: mardin)
+//         .padding()
+//         .previewLayout(.sizeThatFits)
+// }

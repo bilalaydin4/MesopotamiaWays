@@ -7,29 +7,38 @@
 
 import Foundation
 import CoreLocation
+import FirebaseFirestore
 
-struct RestaurantsModel : Identifiable {
-    var id : Int
-    var name : String
-    var description : String
-    var image : [String]
+struct RestaurantsModel: Identifiable, Codable {
+    @DocumentID var id: String?
+    var name: String
+    var description: String
+    var image: [String] // URL array
+    var coordinate: CoordinateModel
     
-    var coordinate : CoordinateModel
+    var category: String?
+    var priceRange: String?
+    var openingHours: String?
+    var phoneNumber: String?
+    var email: String?
+    var website: String?
+    var address: String?
+    var city: String?
+    var district: String?
+    var rating: Double?
+    var reviewCount: Int?
+    var features: [String]?
     
-    var location : CLLocationCoordinate2D {
+    var location: CLLocationCoordinate2D {
         CLLocationCoordinate2D(latitude: coordinate.latitude, longitude: coordinate.longitude)
     }
 }
 
-
-struct CoordinateModel : Identifiable {
-    var id : Int
-    var latitude : Double
-    var longitude : Double
+struct CoordinateModel: Codable {
+    var latitude: Double
+    var longitude: Double
 }
 
-
-let HamdaniRestaurant = RestaurantsModel(id: 1, name: "Hamdani Restaurant", description: "nice", image: ["Hamdani", "Hamdani2"], coordinate: CoordinateModel(id: 1, latitude: 37.32251936526379, longitude:  40.730032655052774))
-let leyli = RestaurantsModel(id: 2, name: "Leyli Resturant", description: "its nice", image: ["leyli", "leyli2"], coordinate: CoordinateModel(id: 2, latitude: 37.31621498520392,  longitude: 40.734372110798795))
-
-let resturans : [RestaurantsModel] = [HamdaniRestaurant , leyli]
+// let HamdaniRestaurant = RestaurantsModel(...)
+// let leyli = RestaurantsModel(...)
+// let resturans: [RestaurantsModel] = [HamdaniRestaurant , leyli]

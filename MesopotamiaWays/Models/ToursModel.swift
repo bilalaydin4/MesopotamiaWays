@@ -5,15 +5,15 @@
 //  Created by Bilal AYDIN on 3.12.2025.
 //
 
-
 import Foundation
 import CoreLocation
+import FirebaseFirestore
 
-struct ToursModel: Identifiable {
-    var id: Int
+struct ToursModel: Identifiable, Codable {
+    @DocumentID var id: String?
     var name: String
-    var logoImage: String
-    var placesToGo: [PlacesModel] 
+    var logoImage: String // Firebase Storage URL
+    var placesToGo: [PlacesModel]
     var timeToGo: String
     
     var coordinates: ToursCoordinates
@@ -30,22 +30,16 @@ struct ToursModel: Identifiable {
     }
 }
 
-
-struct StartPoint : Identifiable {
-    var id : Int
-    var title : String
-    var latitude : Double
-    var longitude : Double
-}
-
-struct ToursCoordinates: Identifiable {
-    var id : Int
+struct StartPoint: Codable {
+    var title: String
     var latitude: Double
     var longitude: Double
 }
 
+struct ToursCoordinates: Codable {
+    var latitude: Double
+    var longitude: Double
+}
 
-let mardinGap : ToursModel = ToursModel(id: 1, name: "Mardin Gap Tour", logoImage: "gap", placesToGo: [dara, kasimiyeMedresesi, zinciriyeMedresesi], timeToGo: "20.04.2025", coordinates: ToursCoordinates(id: 1, latitude: 37.327256036662035,  longitude: 40.71634512600495), startPointCoordinates: StartPoint(id: 1, title: "Mardin Meydan", latitude: 37.31326723133702,  longitude: 40.73527689624707))
-
-
-let tours : [ToursModel] = [mardinGap]
+// let mardinGap: ToursModel = ToursModel(...)
+// let tours: [ToursModel] = [mardinGap]

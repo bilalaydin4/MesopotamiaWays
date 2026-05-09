@@ -9,8 +9,9 @@ import SwiftUI
 
 // Tüm Yerler View
 struct AllPlacesView: View {
+    @EnvironmentObject var viewModel: MainViewModel
     var body: some View {
-        List(placesss) { place in
+        List(viewModel.places) { place in
             NavigationLink(destination: PlaceDetailView(place: place)) {
                 HStack {
                     if let firstImage = place.imageName.first {

@@ -15,17 +15,19 @@
 import SwiftUI
 import MapKit
 import FirebaseAuth
+import SDWebImageSwiftUI
 
 struct RestaurantsView: View {
-    let restaurants: [RestaurantsModel] = [HamdaniRestaurant, leyli]
+    // let restaurants: [RestaurantsModel] = [HamdaniRestaurant, leyli]
+    @EnvironmentObject var viewModel: MainViewModel
     @State private var searchText = ""
     @State private var selectedRestaurant: RestaurantsModel?
     
     var filteredRestaurants: [RestaurantsModel] {
         if searchText.isEmpty {
-            return restaurants
+            return viewModel.restaurants
         } else {
-            return restaurants.filter { restaurant in
+            return viewModel.restaurants.filter { restaurant in
                 restaurant.name.localizedCaseInsensitiveContains(searchText) ||
                 restaurant.description.localizedCaseInsensitiveContains(searchText)
             }
@@ -69,7 +71,7 @@ struct RestaurantsView: View {
                         .padding(.horizontal)
                     }
                 }
-                .background(Color.white)
+                .background(Color(.systemBackground))
                 
                 // RESTORAN LİSTESİ
                 ScrollView {
@@ -119,6 +121,9 @@ struct RestaurantsView: View {
                         }
                     }
                 }
+                .refreshable {
+                    viewModel.fetchAllData()
+                }
                 .background(Color(.systemGroupedBackground))
             }
             .navigationTitle("Restoranlar")
@@ -138,11 +143,15 @@ struct RestaurantCard: View {
             ZStack(alignment: .bottom) {
                 TabView {
                     ForEach(restaurant.image.prefix(3), id: \.self) { imageName in
-                        Image(imageName)
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(height: 160)
-                            .clipped()
+                        if let url = URL(string: imageName) {
+                            WebImage(url: url)
+                                .resizable()
+                                .indicator(.activity)
+                                .transition(.fade(duration: 0.5))
+                                .aspectRatio(contentMode: .fill)
+                                .frame(height: 160)
+                                .clipped()
+                        }
                     }
                 }
                 .frame(height: 160)
@@ -225,7 +234,7 @@ struct RestaurantCard: View {
             .padding(.horizontal, 12)
             .padding(.bottom, 12)
         }
-        .background(Color.white)
+        .background(Color(.secondarySystemGroupedBackground))
         .cornerRadius(12)
         .shadow(color: .gray.opacity(0.2), radius: 4, x: 0, y: 2)
     }
@@ -247,12 +256,16 @@ struct RestaurantDetailView: View {
                     ZStack(alignment: .bottom) {
                         TabView(selection: $currentImageIndex) {
                             ForEach(0..<restaurant.image.count, id: \.self) { index in
-                                Image(restaurant.image[index])
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                                    .frame(height: 250)
-                                    .clipped()
-                                    .tag(index)
+                                if let url = URL(string: restaurant.image[index]) {
+                                    WebImage(url: url)
+                                        .resizable()
+                                        .indicator(.activity)
+                                        .transition(.fade(duration: 0.5))
+                                        .aspectRatio(contentMode: .fill)
+                                        .frame(height: 250)
+                                        .clipped()
+                                        .tag(index)
+                                }
                             }
                         }
                         .frame(height: 250)
@@ -423,16 +436,18 @@ struct RestaurantDetailView: View {
                                     // RESTORAN ANNOTATION'ı - Restoranın İlk Resmi
                                     if !restaurant.image.isEmpty {
                                         VStack {
-                                            Image(restaurant.image.first ?? "placeholder")
-                                                .resizable()
-                                                .aspectRatio(contentMode: .fill)
-                                                .frame(width: 50, height: 50)
-                                                .clipShape(Circle())
-                                                .overlay(
-                                                    Circle()
-                                                        .stroke(Color.white, lineWidth: 3)
-                                                )
-                                                .shadow(radius: 5)
+                                            if let firstImage = restaurant.image.first, let url = URL(string: firstImage) {
+                                                WebImage(url: url)
+                                                    .resizable()
+                                                    .aspectRatio(contentMode: .fill)
+                                                    .frame(width: 50, height: 50)
+                                                    .clipShape(Circle())
+                                                    .overlay(
+                                                        Circle()
+                                                            .stroke(Color.white, lineWidth: 3)
+                                                    )
+                                                    .shadow(radius: 5)
+                                            }
                                             
                                             Text(restaurant.name)
                                                 .font(.caption)
@@ -482,7 +497,7 @@ struct RestaurantDetailView: View {
         }
         
         // Burada rezervasyon işlemini gerçekleştir
-        print("Rezervasyon yapılıyor - Otel: \(restaurant.name), Kullanıcı: \(user.uid)")
+        print("Rezervasyon yapılıyor - Restoran: \(restaurant.name), Kullanıcı: \(user.uid)")
         
         // Rezervasyon işlemi burada yapılacak
         // Burada rezervasyon API'si çağrılabilir veya telefon/email açılabilir
@@ -524,16 +539,18 @@ struct FullScreenRestaurantMapView: View {
                     MapAnnotation(coordinate: restaurant.location) {
                         VStack(spacing: 4) {
                             if !restaurant.image.isEmpty {
-                                Image(restaurant.image.first ?? "placeholder")
-                                    .resizable()
-                                    .aspectRatio(contentMode: .fill)
-                                    .frame(width: 60, height: 60)
-                                    .clipShape(Circle())
-                                    .overlay(
-                                        Circle()
-                                            .stroke(Color.white, lineWidth: 4)
-                                    )
-                                    .shadow(radius: 10)
+                                if let firstImage = restaurant.image.first, let url = URL(string: firstImage) {
+                                    WebImage(url: url)
+                                        .resizable()
+                                        .aspectRatio(contentMode: .fill)
+                                        .frame(width: 60, height: 60)
+                                        .clipShape(Circle())
+                                        .overlay(
+                                            Circle()
+                                                .stroke(Color.white, lineWidth: 4)
+                                        )
+                                        .shadow(radius: 10)
+                                }
                             }
                             
                             Text(restaurant.name)

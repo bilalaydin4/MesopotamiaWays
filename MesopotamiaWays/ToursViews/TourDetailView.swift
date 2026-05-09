@@ -87,7 +87,7 @@ struct TourDetailView: View {
                                 Text("Tur Başlangıç")
                                     .font(.caption2)
                                     .padding(4)
-                                    .background(Color.white.opacity(0.8))
+                                    .background(Color(.systemBackground).opacity(0.8))
                                     .cornerRadius(4)
                             }
                         }
@@ -277,25 +277,24 @@ struct TourRowView: View {
 }
 
 // Önizleme
-struct TourDetailView_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationView {
-            TourDetailView(tour: mardinGap)
-        }
-    }
-}
-
-struct ToursListView_Previews: PreviewProvider {
-    static var previews: some View {
-        NavigationView {
-            ToursListView(tours: [mardinGap])
-        }
-    }
-}
-
-
-#Preview {
-    NavigationStack {
-        TourDetailView(tour: mardinGap)
-    }
-}
+// struct TourDetailView_Previews: PreviewProvider {
+//     static var previews: some View {
+//         NavigationView {
+//             TourDetailView(tour: mardinGap)
+//         }
+//     }
+// }
+// 
+// struct ToursListView_Previews: PreviewProvider {
+//     static var previews: some View {
+//         NavigationView {
+//             ToursListView(tours: [mardinGap])
+//         }
+//     }
+// }
+// 
+// #Preview {
+//     NavigationStack {
+//         TourDetailView(tour: mardinGap)
+//     }
+// }

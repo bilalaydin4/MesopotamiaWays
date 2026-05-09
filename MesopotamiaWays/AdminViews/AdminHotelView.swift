@@ -7,6 +7,7 @@
 
 import SwiftUI
 import PhotosUI
+import FirebaseFirestore
 
 struct AdminHotelView: View {
     @State private var hotelName = ""
@@ -231,21 +232,52 @@ struct AdminHotelView: View {
         
         isProcessing = true
         
-        // Burada Firebase'e kaydetme işlemi yapılacak
-        // Önce resimleri Firebase Storage'a yükle
-        // Sonra otel bilgilerini Firestore'a kaydet
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            // ID'yi artır
-            nextId += 1
+        StorageManager.shared.uploadImages(images: selectedImages, folder: "hotels") { urls in
+            if urls.isEmpty {
+                self.validationMessage = "Resimler yüklenirken bir hata oluştu."
+                self.showValidationError = true
+                self.isProcessing = false
+                return
+            }
             
-            // Başarı mesajı göster
-            showSuccessAlert = true
+            let db = Firestore.firestore()
+            let newHotelRef = db.collection("hotels").document()
             
-            // Formu temizle
-            clearForm()
+            let hotelData: [String: Any] = [
+                // "id": newHotelRef.documentID, // DocumentID FirebaseFirestoreSwift tarafından otomatik atanır
+                "hotelName": hotelName,
+                "city": selectedCity,
+                "district": selectedDistrict,
+                "shortDescription": shortDescription,
+                "hotelDescription": hotelDescription,
+                "hotelImage": urls,
+                "starCount": starCount,
+                "rating": rating,
+                "reviewCount": reviewCount,
+                "oneNightPriceForOnePerson": Double(priceOnePerson) ?? 0.0,
+                "oneNightPriceForTwoPeople": Double(priceTwoPeople) ?? 0.0,
+                "coordinate": [
+                    "latitude": Double(latitude) ?? 0.0,
+                    "longitude": Double(longitude) ?? 0.0
+                ],
+                "phoneNumber": phoneNumber,
+                "email": email,
+                "address": address,
+                "amenities": selectedAmenities
+            ]
             
-            isProcessing = false
+            newHotelRef.setData(hotelData) { error in
+                DispatchQueue.main.async {
+                    self.isProcessing = false
+                    if let error = error {
+                        self.validationMessage = "Firestore'a kaydedilirken hata oluştu: \(error.localizedDescription)"
+                        self.showValidationError = true
+                    } else {
+                        self.showSuccessAlert = true
+                        self.clearForm()
+                    }
+                }
+            }
         }
     }
     

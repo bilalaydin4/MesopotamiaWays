@@ -2,17 +2,19 @@ import SwiftUI
 import MapKit
 
 struct ContentView: View {
-    let places: [PlacesModel] = [mardin, dara, zinciriyeMedresesi, kasimiyeMedresesi]
-    let hotels: [HotelsModel] = [buyukMardinOteli, yayGrand]
-    let restaurants: [RestaurantsModel] = [HamdaniRestaurant, leyli]
+    // let places: [PlacesModel] = [mardin, dara, zinciriyeMedresesi, kasimiyeMedresesi]
+    // let hotels: [HotelsModel] = [buyukMardinOteli, yayGrand]
+    // let restaurants: [RestaurantsModel] = [HamdaniRestaurant, leyli]
+    
+    @EnvironmentObject var viewModel: MainViewModel
     
     @State private var searchText = ""
     
     var filteredPlaces: [PlacesModel] {
         if searchText.isEmpty {
-            return places
+            return viewModel.places
         } else {
-            return places.filter { place in
+            return viewModel.places.filter { place in
                 place.name.localizedCaseInsensitiveContains(searchText) ||
                 place.history.localizedCaseInsensitiveContains(searchText) ||
                 place.age.localizedCaseInsensitiveContains(searchText)
@@ -81,12 +83,12 @@ struct ContentView: View {
                                     }
                                     .buttonStyle(PlainButtonStyle())
                                     
-                                    NavigationLink(destination: ToursListView(tours: tours)) {
+                                    NavigationLink(destination: ToursListView(tours: viewModel.tours)) {
                                         QuickAccessButton(icon: "flag.fill", title: "Turlar")
                                     }
                                     .buttonStyle(PlainButtonStyle())
                                     
-                                    NavigationLink(destination: MapView(places: places, hotels: hotels, restaurants: restaurants)) {
+                                    NavigationLink(destination: MapView(places: viewModel.places, hotels: viewModel.hotels, restaurants: viewModel.restaurants)) {
                                         QuickAccessButton(icon: "map.fill", title: "Harita")
                                     }
                                     .buttonStyle(PlainButtonStyle())
@@ -143,6 +145,9 @@ struct ContentView: View {
                     }
                     .padding(.vertical)
                 }
+                .refreshable {
+                    viewModel.fetchAllData()
+                }
                 .navigationTitle("Mardin")
             }
             .tabItem {
@@ -152,7 +157,7 @@ struct ContentView: View {
             
             // TAB 2: HARİTA
             NavigationView {
-                MapView(places: places, hotels: hotels, restaurants: restaurants)
+                MapView(places: viewModel.places, hotels: viewModel.hotels, restaurants: viewModel.restaurants)
                     .navigationTitle("Harita")
                     .edgesIgnoringSafeArea(.bottom)
             }
@@ -163,7 +168,7 @@ struct ContentView: View {
             
             // TAB 3: TURLAR
             NavigationView {
-                ToursListView(tours: tours)
+                ToursListView(tours: viewModel.tours)
                     .navigationTitle("Turlar")
             }
             .tabItem {

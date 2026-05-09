@@ -7,6 +7,7 @@
 
 import SwiftUI
 import PhotosUI
+import FirebaseFirestore
 
 struct AdminPlacesView: View {
     @State private var placeName = ""
@@ -25,6 +26,8 @@ struct AdminPlacesView: View {
     @State private var phoneNumber = ""
     @State private var address = ""
     @State private var interestingFact = ""
+    @State private var selectedFeatures: [String] = []
+    
     
     @State private var nextId = 5
     @State private var showSuccessAlert = false
@@ -218,7 +221,7 @@ struct AdminPlacesView: View {
                         
                         // ÖZELLİKLER
                         CardView(title: "Yer Özellikleri") {
-                            PlaceFeaturesView()
+                            PlaceFeaturesView(selectedFeatures: $selectedFeatures)
                         }
                     }
                     .padding(.horizontal)
@@ -299,29 +302,50 @@ struct AdminPlacesView: View {
         
         isProcessing = true
         
-        // Burada Firebase'e kaydetme işlemi yapılacak
-        print("Firebase'e eklenecek tarihi yer:")
-        print("""
-        ID: \(nextId)
-        Ad: \(placeName)
-        Şehir: \(selectedCity)
-        İlçe: \(selectedDistrict)
-        Kategori: \(category)
-        Yaş: \(age)
-        Resim Sayısı: \(selectedImages.count)
-        """)
-        
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-            // ID'yi artır
-            nextId += 1
+        StorageManager.shared.uploadImages(images: selectedImages, folder: "places") { urls in
+            if urls.isEmpty {
+                self.validationMessage = "Resimler yüklenirken bir hata oluştu."
+                self.showValidationError = true
+                self.isProcessing = false
+                return
+            }
             
-            // Başarı mesajı göster
-            showSuccessAlert = true
+            let db = Firestore.firestore()
+            let newPlaceRef = db.collection("places").document()
             
-            // Formu temizle
-            clearForm()
+            let placeData: [String: Any] = [
+                // "id": newPlaceRef.documentID,
+                "name": placeName,
+                "history": history,
+                "age": age,
+                "imageName": urls,
+                "coordinates": [
+                    "latitude": Double(latitude) ?? 0.0,
+                    "longitude": Double(longitude) ?? 0.0
+                ],
+                "videoUrl": videoUrl,
+                "category": category,
+                "entranceFee": entranceFee,
+                "visitingHours": visitingHours,
+                "website": website,
+                "phoneNumber": phoneNumber,
+                "address": address,
+                "interestingFact": interestingFact,
+                "features": selectedFeatures
+            ]
             
-            isProcessing = false
+            newPlaceRef.setData(placeData) { error in
+                DispatchQueue.main.async {
+                    self.isProcessing = false
+                    if let error = error {
+                        self.validationMessage = "Firestore'a kaydedilirken hata oluştu: \(error.localizedDescription)"
+                        self.showValidationError = true
+                    } else {
+                        self.showSuccessAlert = true
+                        self.clearForm()
+                    }
+                }
+            }
         }
     }
     
@@ -358,13 +382,15 @@ struct AdminPlacesView: View {
             return false
         }
         
-        if !videoUrl.isEmpty && !isValidURL(videoUrl) {
+        let trimmedVideoUrl = videoUrl.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !trimmedVideoUrl.isEmpty && !isValidURL(trimmedVideoUrl) {
             validationMessage = "Geçerli bir video URL'si giriniz"
             showValidationError = true
             return false
         }
         
-        if !website.isEmpty && !isValidURL(website) {
+        let trimmedWebsite = website.trimmingCharacters(in: .whitespacesAndNewlines)
+        if !trimmedWebsite.isEmpty && !isValidURL(trimmedWebsite) {
             validationMessage = "Geçerli bir website URL'si giriniz"
             showValidationError = true
             return false
@@ -374,8 +400,11 @@ struct AdminPlacesView: View {
     }
     
     func isValidURL(_ string: String) -> Bool {
-        let urlPattern = "^(https?://)?([\\da-z.-]+)\\.([a-z.]{2,6})[/\\w .-]*/?$"
-        return string.range(of: urlPattern, options: .regularExpression) != nil
+        let trimmedString = string.trimmingCharacters(in: .whitespacesAndNewlines)
+        // Eğer kullanıcı http:// eklemeyi unuttuysa ama geçerli bir metinse onu kurtarmaya çalışalım
+        let urlString = trimmedString.lowercased().hasPrefix("http") ? trimmedString : "https://\(trimmedString)"
+        guard let url = URL(string: urlString) else { return false }
+        return url.scheme == "http" || url.scheme == "https"
     }
     
     func clearForm() {
@@ -400,7 +429,7 @@ struct AdminPlacesView: View {
 
 // MARK: - Yer Özellikleri Bileşeni
 struct PlaceFeaturesView: View {
-    @State private var selectedFeatures: [String] = []
+    @Binding var selectedFeatures: [String]
     
     let features = [
         ("Rehberli Tur", "person.fill"),

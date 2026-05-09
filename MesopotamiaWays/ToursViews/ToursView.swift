@@ -11,13 +11,14 @@ import SwiftUI
 import MapKit
 
 struct ToursView: View {
+    @EnvironmentObject var viewModel: MainViewModel
     @State private var selectedTab = 0
     
     var body: some View {
         TabView(selection: $selectedTab) {
             // Tab 1: Ana Sayfa / Turlar
             NavigationView {
-                ToursListView(tours: tours)
+                ToursListView(tours: viewModel.tours)
             }
             .tabItem {
                 Label("Turlar", systemImage: "map.fill")

@@ -27,10 +27,12 @@ class AppDelegate: NSObject, UIApplicationDelegate {
 struct MesopotamiaWaysApp: App {
     
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    @StateObject private var viewModel = MainViewModel()
     
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(viewModel)
         }
     }
 }
