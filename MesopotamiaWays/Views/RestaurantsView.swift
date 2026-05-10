@@ -109,8 +109,9 @@ struct RestaurantsView: View {
                             .padding()
                         } else {
                             LazyVStack(spacing: 16) {
-                                ForEach(filteredRestaurants) { restaurant in
+                                ForEach(Array(filteredRestaurants.enumerated()), id: \.element.id) { index, restaurant in
                                     RestaurantCard(restaurant: restaurant)
+                                        .staggeredFadeIn(index: index)
                                         .onTapGesture {
                                             selectedRestaurant = restaurant
                                         }

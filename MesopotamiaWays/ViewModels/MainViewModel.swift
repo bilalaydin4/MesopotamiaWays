@@ -34,8 +34,10 @@ class MainViewModel: ObservableObject {
         let hotelListener = db.collection("hotels").addSnapshotListener { [weak self] snapshot, error in
             guard let self = self else { return }
             if let snapshot = snapshot {
-                self.hotels = snapshot.documents.compactMap { doc in
-                    try? doc.data(as: HotelsModel.self)
+                withAnimation(.easeInOut) {
+                    self.hotels = snapshot.documents.compactMap { doc in
+                        try? doc.data(as: HotelsModel.self)
+                    }
                 }
             }
             self.checkLoadingStatus()
@@ -46,8 +48,10 @@ class MainViewModel: ObservableObject {
         let placeListener = db.collection("places").addSnapshotListener { [weak self] snapshot, error in
             guard let self = self else { return }
             if let snapshot = snapshot {
-                self.places = snapshot.documents.compactMap { doc in
-                    try? doc.data(as: PlacesModel.self)
+                withAnimation(.easeInOut) {
+                    self.places = snapshot.documents.compactMap { doc in
+                        try? doc.data(as: PlacesModel.self)
+                    }
                 }
             }
             self.checkLoadingStatus()
@@ -58,8 +62,10 @@ class MainViewModel: ObservableObject {
         let restaurantListener = db.collection("restaurants").addSnapshotListener { [weak self] snapshot, error in
             guard let self = self else { return }
             if let snapshot = snapshot {
-                self.restaurants = snapshot.documents.compactMap { doc in
-                    try? doc.data(as: RestaurantsModel.self)
+                withAnimation(.easeInOut) {
+                    self.restaurants = snapshot.documents.compactMap { doc in
+                        try? doc.data(as: RestaurantsModel.self)
+                    }
                 }
             }
             self.checkLoadingStatus()
@@ -70,8 +76,10 @@ class MainViewModel: ObservableObject {
         let tourListener = db.collection("tours").addSnapshotListener { [weak self] snapshot, error in
             guard let self = self else { return }
             if let snapshot = snapshot {
-                self.tours = snapshot.documents.compactMap { doc in
-                    try? doc.data(as: ToursModel.self)
+                withAnimation(.easeInOut) {
+                    self.tours = snapshot.documents.compactMap { doc in
+                        try? doc.data(as: ToursModel.self)
+                    }
                 }
             }
             self.checkLoadingStatus()

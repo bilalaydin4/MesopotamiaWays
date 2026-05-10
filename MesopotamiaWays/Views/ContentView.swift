@@ -2,217 +2,161 @@ import SwiftUI
 import MapKit
 
 struct ContentView: View {
-    // let places: [PlacesModel] = [mardin, dara, zinciriyeMedresesi, kasimiyeMedresesi]
-    // let hotels: [HotelsModel] = [buyukMardinOteli, yayGrand]
-    // let restaurants: [RestaurantsModel] = [HamdaniRestaurant, leyli]
-    
     @EnvironmentObject var viewModel: MainViewModel
-    
     @State private var searchText = ""
-    
-    var filteredPlaces: [PlacesModel] {
-        if searchText.isEmpty {
-            return viewModel.places
-        } else {
-            return viewModel.places.filter { place in
-                place.name.localizedCaseInsensitiveContains(searchText) ||
-                place.history.localizedCaseInsensitiveContains(searchText) ||
-                place.age.localizedCaseInsensitiveContains(searchText)
-            }
-        }
-    }
     
     var body: some View {
         TabView {
-            // TAB 1: KEŞFET (Ana Sayfa)
+            // TAB 1: ANA SAYFA (KEŞFET)
             NavigationView {
-                ScrollView {
-                    VStack(spacing: 20) {
-                        
-                        // ARAMA ÇUBUĞU
-                        VStack(spacing: 16) {
+                ZStack {
+                    // Arka Plan Rengi
+                    Color(.systemGroupedBackground).ignoresSafeArea()
+                    
+                    List {
+                        // 1. HERO SECTION (Karşılama)
+                        Section {
+                            VStack(alignment: .leading, spacing: 8) {
+                                Text("Mezopotamya'yı")
+                                    .font(.system(size: 16, weight: .medium))
+                                    .foregroundColor(.secondary)
+                                
+                                Text("Keşfetmeye Hazır Mısın?")
+                                    .font(.system(size: 28, weight: .bold))
+                                    .foregroundColor(.primary)
+                            }
+                            .padding(.vertical, 10)
+                            .listRowBackground(Color.clear)
+                        }
+                        .listRowSeparator(.hidden)
+
+                        // 2. ARAMA ÇUBUĞU
+                        Section {
                             HStack {
                                 Image(systemName: "magnifyingglass")
                                     .foregroundColor(.secondary)
-                                
-                                TextField("Mardin, Dara, Medreseler...", text: $searchText)
-                                    .textFieldStyle(PlainTextFieldStyle())
-                                
+                                TextField("Nereyi arıyorsun?", text: $searchText)
                                 if !searchText.isEmpty {
-                                    Button(action: {
-                                        searchText = ""
-                                    }) {
-                                        Image(systemName: "xmark.circle.fill")
-                                            .foregroundColor(.secondary)
+                                    Button(action: { searchText = "" }) {
+                                        Image(systemName: "xmark.circle.fill").foregroundColor(.secondary)
                                     }
                                 }
                             }
                             .padding(12)
-                            .background(Color(.systemGray6))
+                            .background(Color(.secondarySystemGroupedBackground))
                             .cornerRadius(12)
-                            .padding(.horizontal)
-                            
-                            // Arama sonuç sayısı
-                            if !searchText.isEmpty {
-                                HStack {
-                                    Text("\(filteredPlaces.count) sonuç bulundu")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                    Spacer()
-                                }
-                                .padding(.horizontal)
-                            }
+                            .listRowBackground(Color.clear)
+                            .listRowInsets(EdgeInsets(top: 0, leading: 16, bottom: 10, trailing: 16))
                         }
-                        
-                        // HIZLI ERİŞİM BUTONLARI - EKLENDİ
-                        VStack(alignment: .leading, spacing: 12) {
-                            Text("Hızlı Erişim")
-                                .font(.headline)
-                                .fontWeight(.semibold)
-                                .padding(.horizontal)
-                            
+                        .listRowSeparator(.hidden)
+
+                        // 3. KATEGORİLER (Hızlı Erişim)
+                        Section {
                             ScrollView(.horizontal, showsIndicators: false) {
-                                HStack(spacing: 15) {
+                                HStack(spacing: 20) {
                                     NavigationLink(destination: HotelsView()) {
-                                        QuickAccessButton(icon: "building.2", title: "Oteller")
+                                        CategoryView(icon: "building.2.fill", title: "Oteller", color: .orange)
                                     }
                                     .buttonStyle(PlainButtonStyle())
                                     
                                     NavigationLink(destination: RestaurantsView()) {
-                                        QuickAccessButton(icon: "fork.knife", title: "Restoranlar")
+                                        CategoryView(icon: "fork.knife", title: "Restoranlar", color: .red)
                                     }
                                     .buttonStyle(PlainButtonStyle())
                                     
                                     NavigationLink(destination: ToursListView(tours: viewModel.tours)) {
-                                        QuickAccessButton(icon: "flag.fill", title: "Turlar")
+                                        CategoryView(icon: "flag.fill", title: "Turlar", color: .blue)
                                     }
                                     .buttonStyle(PlainButtonStyle())
                                     
                                     NavigationLink(destination: MapView(places: viewModel.places, hotels: viewModel.hotels, restaurants: viewModel.restaurants)) {
-                                        QuickAccessButton(icon: "map.fill", title: "Harita")
+                                        CategoryView(icon: "map.fill", title: "Harita", color: .green)
                                     }
                                     .buttonStyle(PlainButtonStyle())
                                 }
-                                .padding(.horizontal)
+                                .padding(.horizontal, 4)
                             }
+                            .listRowBackground(Color.clear)
                         }
-                        .padding(.top, 5)
-                        
-                        // YAKININIZDAKİ YERLER
-                        VStack(alignment: .leading) {
-                            HStack {
-                                Text(searchText.isEmpty ? "Keşfedilecek Yerler" : "Arama Sonuçları")
-                                    .font(.title2)
-                                    .fontWeight(.semibold)
-                                
-                                Spacer()
-                                
-                                Text("\(filteredPlaces.count) yer")
-                                    .font(.caption)
-                                    .foregroundColor(.secondary)
-                            }
-                            .padding(.horizontal)
-                            
-                            // SONUÇLAR
-                            if filteredPlaces.isEmpty {
-                                VStack(spacing: 16) {
-                                    Image(systemName: "magnifyingglass")
-                                        .font(.system(size: 50))
-                                        .foregroundColor(.secondary)
-                                    
-                                    Text("'\(searchText)' için sonuç bulunamadı")
-                                        .font(.headline)
-                                        .foregroundColor(.secondary)
-                                    
-                                    Text("Farklı bir anahtar kelime deneyin")
-                                        .font(.caption)
-                                        .foregroundColor(.secondary)
-                                }
-                                .frame(height: 200)
-                                .padding()
+                        .listRowSeparator(.hidden)
+
+                        // 4. KEŞFEDİLECEK YERLER
+                        Section(header: Text("Sana Özel Yerler").font(.headline).foregroundColor(.primary).textCase(nil)) {
+                            let results = filteredPlaces
+                            if results.isEmpty {
+                                Text("Sonuç bulunamadı").foregroundColor(.secondary).padding()
                             } else {
-                                LazyVStack(spacing: 16) {
-                                    ForEach(filteredPlaces) { place in
-                                        NavigationLink(destination: PlaceDetailView(place: place)) {
-                                            PlaceCard(place: place)
-                                        }
-                                        .buttonStyle(PlainButtonStyle())
+                                ForEach(results) { place in
+                                    NavigationLink(destination: PlaceDetailView(place: place)) {
+                                        PlaceCard(place: place)
                                     }
+                                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+                                    .listRowBackground(Color.clear)
                                 }
-                                .padding(.horizontal)
                             }
                         }
+                        .listRowSeparator(.hidden)
                     }
-                    .padding(.vertical)
+                    .listStyle(.plain)
+                    .refreshable {
+                        await viewModel.fetchAllData()
+                    }
                 }
-                .refreshable {
-                    viewModel.fetchAllData()
-                }
-                .navigationTitle("Mardin")
+                .navigationBarHidden(true) // Daha modern bir görünüm için bar gizlendi
             }
             .tabItem {
-                Image(systemName: "house.fill")
-                Text("Ana Sayfa")
+                Label("Keşfet", systemImage: "safari.fill")
             }
             
-            // TAB 2: HARİTA
+            // DİĞER TABLAR (Aynı Mantıkla)
             NavigationView {
                 MapView(places: viewModel.places, hotels: viewModel.hotels, restaurants: viewModel.restaurants)
                     .navigationTitle("Harita")
-                    .edgesIgnoringSafeArea(.bottom)
             }
-            .tabItem {
-                Image(systemName: "map.fill")
-                Text("Harita")
-            }
+            .tabItem { Label("Harita", systemImage: "map.fill") }
             
-            // TAB 3: TURLAR
             NavigationView {
                 ToursListView(tours: viewModel.tours)
                     .navigationTitle("Turlar")
             }
-            .tabItem {
-                Image(systemName: "flag.fill")
-                Text("Turlar")
-            }
+            .tabItem { Label("Turlar", systemImage: "flag.fill") }
             
-            // TAB 4: PROFİL
             NavigationView {
                 ProfileView()
                     .navigationTitle("Profil")
             }
-            .tabItem {
-                Image(systemName: "person.fill")
-                Text("Profil")
-            }
+            .tabItem { Label("Profil", systemImage: "person.fill") }
         }
-        .accentColor(Color(red: 0.85, green: 0.48, blue: 0.27))
+        .accentColor(.orange)
+    }
+    
+    var filteredPlaces: [PlacesModel] {
+        if searchText.isEmpty { return viewModel.places }
+        return viewModel.places.filter { $0.name.localizedCaseInsensitiveContains(searchText) }
     }
 }
 
-// Hızlı Erişim Butonu Bileşeni
-struct QuickAccessButton: View {
+// MARK: - Kategori Bileşeni
+struct CategoryView: View {
     let icon: String
     let title: String
+    let color: Color
     
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 12) {
             ZStack {
                 Circle()
-                    .fill(Color(red: 0.85, green: 0.48, blue: 0.27))
-                    .frame(width: 60, height: 60)
+                    .fill(color.opacity(0.15))
+                    .frame(width: 64, height: 64)
                 
                 Image(systemName: icon)
                     .font(.title2)
-                    .foregroundColor(.white)
+                    .foregroundColor(color)
             }
             
             Text(title)
-                .font(.caption)
-                .fontWeight(.medium)
+                .font(.system(size: 13, weight: .semibold))
                 .foregroundColor(.primary)
-                .frame(width: 70)
-                .multilineTextAlignment(.center)
         }
     }
 }

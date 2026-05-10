@@ -162,8 +162,9 @@ struct HotelsView: View {
                         .padding()
                     } else {
                         LazyVStack(spacing: 16) {
-                            ForEach(filteredHotels) { hotel in
+                            ForEach(Array(filteredHotels.enumerated()), id: \.element.id) { index, hotel in
                                 HotelCard(hotel: hotel)
+                                    .staggeredFadeIn(index: index)
                                     .onTapGesture {
                                         selectedHotel = hotel
                                         showHotelDetail = true
